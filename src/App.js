@@ -1,18 +1,42 @@
-import logo from './logo.svg';
-import './App.css';
-import Alert from 'react-bootstrap/Alert'
-import Button from 'react-bootstrap/Button'
-import Col from 'react-bootstrap/Col'
+import { Routes, Route } from "react-router-dom";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
+import Cadastro from "./components/Cadastro/Cadastro";
+import Login from "./components/Login/Login";
+import AlterarDados from "./components/AlterarDados/AlterarDados";
+import "./App.css";
 
-
-
-const App = () => (
-  <Col>
- <Alert variant='primary'>
-  Alo
- </Alert>
- <Button>TESTE</Button>
- </Col>
-);
+function App() {
+    return (
+        <Container
+            fluid
+            style={{
+                minHeight: "100%",
+                position: "relative",
+                display: "flex",
+                overflowX: "hidden",
+            }}
+            className="App"
+        >
+            <Row
+                style={{
+                    height: "100%",
+                    flex: "1",
+                    alignSelf: "center",
+                    paddingBottom: "32px",
+                }}
+            >
+                <Routes>
+                    <Route path="/" element={<Login />}></Route>
+                    <Route path="/cadastro" element={<Cadastro />}></Route>
+                    <Route
+                        path="/alterarDados"
+                        element={<AlterarDados />}
+                    ></Route>
+                </Routes>
+            </Row>
+        </Container>
+    );
+}
 
 export default App;
