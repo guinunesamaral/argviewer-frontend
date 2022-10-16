@@ -14,7 +14,7 @@ import Alert from 'react-bootstrap/Alert'
 
 function AlterarDados(props) {
     const voltar = () => {
-        window.location.href = (window.location.origin + window.location.pathname).replace(/alterarDados/g, "")
+        window.history.back()
     };
     const [show, setShow] = useState(false);
     const [showAlertSuccess, setShowAlertSuccess] = useState(false);

@@ -8,6 +8,7 @@ import Cadastro from './Cadastro';
 import Login from "./Login"
 import { Routes, Route } from "react-router-dom"
 import AlterarDados from './AlterarDados';
+import TelaPrincipal from './TelaPrincipal';
 
 
 function App() {
@@ -36,6 +37,8 @@ function App() {
           <Route path="/cadastro" element={<Cadastro />}>
           </Route>
           <Route path="/alterarDados" element={<AlterarDados />}>
+          </Route>
+          <Route path="/principal" element={<TelaPrincipal />}>
           </Route>
         </Routes>
       </Row>

@@ -6,12 +6,14 @@ import Col from 'react-bootstrap/Col'
 import Card from 'react-bootstrap/Card'
 import Form from 'react-bootstrap/Form'
 import { Link } from "react-router-dom"
+import NavBar from './NavBar';
 
 
 function Login(props) {
     return (
         <Col style={{ margin: "auto" }}>
-            <Card style={{ alignItems: "center", width: "450px", margin: "auto", textAlign: "center", marginTop: "15%", borderRadius: "15px" }}>
+            <NavBar></NavBar>
+            <Card style={{ alignItems: "center", width: "450px", margin: "auto", textAlign: "center", marginTop: "10%", borderRadius: "15px" }}>
                 <Card.Body>
                     <Card.Title style={{ textAlign: "center", marginBottom: "25px" }}>Login</Card.Title>
                     <Form>
