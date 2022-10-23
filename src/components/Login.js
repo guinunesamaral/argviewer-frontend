@@ -1,22 +1,27 @@
-import logo from "./logo.svg";
-import "./App.css";
-import Alert from "react-bootstrap/Alert";
+import { useState } from "react";
+import { Link } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
-import { Link } from "react-router-dom";
 import NavBar from "./NavBar";
+import { argviewer } from "../plugins/axios";
+import { fetchUserByNickname } from "../store/userSlice";
 
-function Login(props) {
+function Login() {
     const [nickname, setNickname] = useState("gn19");
     const [senha, setSenha] = useState("123456");
+    const dispatch = useDispatch();
 
-    const handleLogin = () => {
-        axiosInstance.post("login", {
+    const handleLogin = async () => {
+        const resLogin = await argviewer.post("usuarios/login", {
             nickname: nickname,
             senha: senha,
         });
+        if (resLogin.status === 200) {
+            dispatch(fetchUserByNickname(nickname));
+        }
     };
 
     return (

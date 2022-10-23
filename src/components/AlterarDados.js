@@ -9,10 +9,16 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Figure from "react-bootstrap/Figure";
 import Modal from "react-bootstrap/Modal";
 import Alert from "react-bootstrap/Alert";
+import { argviewer } from "../plugins/axios";
+import { useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 function AlterarDados(props) {
+    const state = useSelector((state) => state.user);
+    const navigate = useNavigate();
+
     const voltar = () => {
-        window.history.back();
+        navigate(-1);
     };
     const [show, setShow] = useState(false);
     const [showAlertSuccess, setShowAlertSuccess] = useState(false);
@@ -20,7 +26,29 @@ function AlterarDados(props) {
     const handleShow = () => setShow(true);
     const handleCloseAndShowAlert = () => {
         setShow(false);
-        setShowAlertSuccess(true);
+        const status = handleUpdate();
+        setShowAlertSuccess(status === 200);
+    };
+
+    const [nome, setNome] = useState("gn19");
+    const [email, setEmail] = useState("");
+    const [senha, setSenha] = useState("123456");
+    const [senha2, setSenha2] = useState("");
+
+    const handleUpdate = async () => {
+        const res = await argviewer.post("usuarios", {
+            id: 1,
+            nome: nome,
+            nickname: "gn19",
+            email: email,
+            senha: senha,
+            foto: null,
+            eloId: 1,
+            anonimo: false,
+            moderador: false,
+        });
+
+        return res.status;
     };
 
     return (
@@ -55,15 +83,16 @@ function AlterarDados(props) {
                             width={100}
                             height={100}
                             alt="150x150"
-                            src={require("./img/perfil.jpg")}
+                            src={`data:image/png;base64,${state.data.foto}`}
                         />
                     </Figure>
                     <Form>
                         <Form.Group className="mb-3" controlId="formBasicEmail">
                             <Form.Label>Nome de usuário</Form.Label>
                             <Form.Control
-                                defaultValue={"dnscstr"}
                                 placeholder="Insira seu nome"
+                                value={nome}
+                                onChange={(e) => setNome(e.target.value)}
                             />
                         </Form.Group>
 
@@ -73,9 +102,10 @@ function AlterarDados(props) {
                         >
                             <Form.Label>Email</Form.Label>
                             <Form.Control
-                                defaultValue="dnscstr@email.com"
                                 type="email"
                                 placeholder="Insira seu email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </Form.Group>
 
@@ -85,9 +115,10 @@ function AlterarDados(props) {
                         >
                             <Form.Label>Senha</Form.Label>
                             <Form.Control
-                                defaultValue="senha"
                                 type="password"
                                 placeholder="Insira sua senha"
+                                value={senha}
+                                onChange={(e) => setSenha(e.target.value)}
                             />
                         </Form.Group>
 
@@ -99,6 +130,8 @@ function AlterarDados(props) {
                             <Form.Control
                                 type="password"
                                 placeholder="Confirme sua senha"
+                                value={senha2}
+                                onChange={(e) => setSenha2(e.target.value)}
                             />
                         </Form.Group>
 

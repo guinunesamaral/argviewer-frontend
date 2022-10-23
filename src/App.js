@@ -1,16 +1,16 @@
-import logo from "./logo.svg";
-import "./App.css";
-import Alert from "react-bootstrap/Alert";
-import Button from "react-bootstrap/Button";
+import { Routes, Route, Navigate } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
-import Cadastro from "./Cadastro";
-import Login from "./Login";
-import { Routes, Route } from "react-router-dom";
-import AlterarDados from "./AlterarDados";
-import TelaPrincipal from "./TelaPrincipal";
+import { useSelector } from "react-redux";
+import Cadastro from "./components/Cadastro";
+import Login from "./components/Login";
+import AlterarDados from "./components/AlterarDados";
+import TelaPrincipal from "./components/TelaPrincipal";
+import "./App.css";
 
 function App() {
+    const state = useSelector((state) => state.user);
+
     return (
         <Container
             fluid
@@ -30,7 +30,17 @@ function App() {
                 }}
             >
                 <Routes>
-                    <Route path="/" element={<Login />}></Route>
+                    <Route
+                        exact
+                        path="/"
+                        element={
+                            state.isLoggedIn ? (
+                                <Navigate replace to="principal" />
+                            ) : (
+                                <Login />
+                            )
+                        }
+                    ></Route>
                     <Route path="/cadastro" element={<Cadastro />}></Route>
                     <Route
                         path="/alterarDados"

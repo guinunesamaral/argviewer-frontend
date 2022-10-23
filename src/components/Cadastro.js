@@ -1,13 +1,13 @@
+import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
+import { Toast, ToastContainer } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { axiosInstance } from "./plugins/axios";
-import { useState } from "react";
-import { Toast, ToastContainer } from "react-bootstrap";
+import { argviewer } from "../plugins/axios";
 
 function Cadastro(props) {
     const voltar = () => {
@@ -23,21 +23,33 @@ function Cadastro(props) {
     const [senha2, setSenha2] = useState("");
     const [show, setShow] = useState(true);
     const [toastMessage, setToastMessage] = useState("");
+    const [isDataValid, setIsDataValid] = useState(false);
 
-    const cadastrar = () => {
+    const cadastrar = async () => {
         if (senha !== senha2) {
             setShow(true);
             setToastMessage("As senhas não podem ser diferentes.");
         } else {
-            axiosInstance.post("usuarios", {
+            const res = await argviewer.post("usuarios", {
                 nome: nome,
                 nickname: nickname,
                 email: email,
                 senha: senha,
                 foto: null,
             });
+            if (res.status === 200) {
+                setIsDataValid(true);
+            } else {
+                setIsDataValid(false);
+            }
         }
     };
+
+    useEffect(() => {
+        if (isDataValid) {
+            window.location.href += "principal";
+        }
+    }, [isDataValid]);
 
     return (
         <Col style={{ margin: "auto" }}>
