@@ -4,7 +4,6 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
-import { Toast, ToastContainer } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { argviewer } from "../plugins/axios";
@@ -21,27 +20,20 @@ function Cadastro(props) {
     const [email, setEmail] = useState("");
     const [senha, setSenha] = useState("");
     const [senha2, setSenha2] = useState("");
-    const [show, setShow] = useState(true);
-    const [toastMessage, setToastMessage] = useState("");
     const [isDataValid, setIsDataValid] = useState(false);
 
     const cadastrar = async () => {
-        if (senha !== senha2) {
-            setShow(true);
-            setToastMessage("As senhas não podem ser diferentes.");
+        const res = await argviewer.post("usuarios", {
+            nome: nome,
+            nickname: nickname,
+            email: email,
+            senha: senha,
+            foto: null,
+        });
+        if (res.status === 200) {
+            setIsDataValid(true);
         } else {
-            const res = await argviewer.post("usuarios", {
-                nome: nome,
-                nickname: nickname,
-                email: email,
-                senha: senha,
-                foto: null,
-            });
-            if (res.status === 200) {
-                setIsDataValid(true);
-            } else {
-                setIsDataValid(false);
-            }
+            setIsDataValid(false);
         }
     };
 
@@ -52,34 +44,18 @@ function Cadastro(props) {
     }, [isDataValid]);
 
     return (
-        <Col style={{ margin: "auto" }}>
-            <div
-                aria-live="polite"
-                aria-atomic="true"
-                className="bg-dark position-relative"
-            >
-                <ToastContainer position="top-end" className="p-3">
-                    <Toast show={show}>
-                        <Toast.Header>
-                            <img
-                                src="holder.js/20x20?text=%20"
-                                className="rounded me-2"
-                                alt="img"
-                            />
-                            <strong className="me-auto">Bootstrap</strong>
-                            <small className="text-muted">just now</small>
-                        </Toast.Header>
-                        <Toast.Body>{toastMessage}</Toast.Body>
-                    </Toast>
-                </ToastContainer>
-            </div>
+        <Col
+            style={{
+                margin: "auto",
+                border: "1px solid red",
+            }}
+        >
             <Card
                 style={{
                     alignItems: "center",
                     width: "450px",
                     margin: "auto",
                     textAlign: "center",
-                    marginTop: "5%",
                     borderRadius: "15px",
                 }}
             >

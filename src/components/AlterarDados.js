@@ -9,9 +9,9 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Figure from "react-bootstrap/Figure";
 import Modal from "react-bootstrap/Modal";
 import Alert from "react-bootstrap/Alert";
-import { argviewer } from "../plugins/axios";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { argviewer } from "../plugins/axios";
 
 function AlterarDados(props) {
     const state = useSelector((state) => state.user);
@@ -30,25 +30,32 @@ function AlterarDados(props) {
         setShowAlertSuccess(status === 200);
     };
 
-    const [nome, setNome] = useState("gn19");
-    const [email, setEmail] = useState("");
-    const [senha, setSenha] = useState("123456");
+    const [nome, setNome] = useState(state.data.nome);
+    const [email, setEmail] = useState(state.data.email);
+    const [senha, setSenha] = useState("");
     const [senha2, setSenha2] = useState("");
 
     const handleUpdate = async () => {
-        const res = await argviewer.post("usuarios", {
-            id: 1,
+        const res = await argviewer.put("usuarios", {
+            id: state.id,
             nome: nome,
-            nickname: "gn19",
+            nickname: state.nickname,
             email: email,
             senha: senha,
-            foto: null,
-            eloId: 1,
-            anonimo: false,
-            moderador: false,
+            foto: state.foto,
+            eloId: state.eloId,
+            anonimo: state.anonimo,
+            moderador: state.moderador,
         });
-
         return res.status;
+    };
+
+    const handleFotoClick = () => {
+        const reader = new FileReader();
+        reader.addEventListener("load", () => {
+            // const uploadedImage = reader.result;
+        });
+        // reader.readAsDataURL(this.files[0]);
     };
 
     return (
@@ -78,7 +85,10 @@ function AlterarDados(props) {
                     >
                         Alterar Dados
                     </Card.Title>
-                    <Figure>
+                    <Figure
+                        style={{ cursor: "pointer" }}
+                        onClick={handleFotoClick}
+                    >
                         <Figure.Image
                             width={100}
                             height={100}
@@ -87,8 +97,8 @@ function AlterarDados(props) {
                         />
                     </Figure>
                     <Form>
-                        <Form.Group className="mb-3" controlId="formBasicEmail">
-                            <Form.Label>Nome de usuário</Form.Label>
+                        <Form.Group className="mb-3" controlId="nome">
+                            <Form.Label>Nome</Form.Label>
                             <Form.Control
                                 placeholder="Insira seu nome"
                                 value={nome}
@@ -96,10 +106,7 @@ function AlterarDados(props) {
                             />
                         </Form.Group>
 
-                        <Form.Group
-                            className="mb-3"
-                            controlId="formBasicPassword"
-                        >
+                        <Form.Group className="mb-3" controlId="email">
                             <Form.Label>Email</Form.Label>
                             <Form.Control
                                 type="email"
@@ -109,10 +116,7 @@ function AlterarDados(props) {
                             />
                         </Form.Group>
 
-                        <Form.Group
-                            className="mb-3"
-                            controlId="formBasicPassword"
-                        >
+                        <Form.Group className="mb-3" controlId="senha1">
                             <Form.Label>Senha</Form.Label>
                             <Form.Control
                                 type="password"
@@ -122,10 +126,7 @@ function AlterarDados(props) {
                             />
                         </Form.Group>
 
-                        <Form.Group
-                            className="mb-3"
-                            controlId="formBasicPassword"
-                        >
+                        <Form.Group className="mb-3" controlId="senha2">
                             <Form.Label>Repetir Senha</Form.Label>
                             <Form.Control
                                 type="password"

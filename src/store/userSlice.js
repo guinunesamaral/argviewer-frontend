@@ -1,5 +1,5 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { argviewer } from "../plugins/axios";
+import { createEntityAdapter, createSlice } from "@reduxjs/toolkit";
+import { PURGE } from "redux-persist";
 
 const initialState = {
     data: {
@@ -11,6 +11,8 @@ const initialState = {
     },
     isLoggedIn: false,
 };
+
+const userAdapter = createEntityAdapter();
 
 export const userSlice = createSlice({
     name: "user",
@@ -29,22 +31,40 @@ export const userSlice = createSlice({
                 isLoggedIn: true,
             };
         },
-        cadastro: (state, action) => {
-            state = action.payload;
+        cadastro: (_, action) => {
+            return {
+                data: {
+                    id: action.payload.id,
+                    nome: action.payload.nome,
+                    nickname: action.payload.name,
+                    email: action.payload.email,
+                    senha: action.payload.senha,
+                    foto: action.payload.foto,
+                },
+                isLoggedIn: true,
+            };
         },
-        update: (state, action) => {
-            state = action.payload;
+        update: (_, action) => {
+            return {
+                data: {
+                    id: action.payload.id,
+                    nome: action.payload.nome,
+                    nickname: action.payload.name,
+                    email: action.payload.email,
+                    senha: action.payload.senha,
+                    foto: action.payload.foto,
+                },
+                isLoggedIn: true,
+            };
         },
+    },
+    extraReducers: (builder) => {
+        builder.addCase(PURGE, (state) => {
+            userAdapter.removeAll(state);
+        });
     },
 });
 
-export const { login } = userSlice.actions;
-
-export const fetchUserByNickname = (nickname) => async (dispatch) => {
-    const resFindByNickname = await argviewer.get(`usuarios?value=${nickname}`);
-    if (resFindByNickname.status === 200) {
-        dispatch(login(resFindByNickname.data[0]));
-    }
-};
+export const { login, logout, cadastro, update } = userSlice.actions;
 
 export default userSlice.reducer;

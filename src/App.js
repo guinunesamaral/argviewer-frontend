@@ -23,10 +23,12 @@ function App() {
         >
             <Row
                 style={{
-                    height: "100%",
+                    height: "100vh",
                     flex: "1",
+                    display: "flex",
+                    justifyContent: "center",
                     alignSelf: "center",
-                    paddingBottom: "32px",
+                    alignItems: "center",
                 }}
             >
                 <Routes>
@@ -48,7 +50,13 @@ function App() {
                     ></Route>
                     <Route
                         path="/principal"
-                        element={<TelaPrincipal />}
+                        element={
+                            !state.isLoggedIn ? (
+                                <Navigate replace to="/" />
+                            ) : (
+                                <TelaPrincipal />
+                            )
+                        }
                     ></Route>
                 </Routes>
             </Row>

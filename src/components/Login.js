@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useDispatch } from "react-redux";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import NavBar from "./NavBar";
+import { login } from "../store/userSlice";
 import { argviewer } from "../plugins/axios";
-import { fetchUserByNickname } from "../store/userSlice";
+import { useDispatch } from "react-redux";
 
 function Login() {
     const [nickname, setNickname] = useState("gn19");
@@ -15,25 +15,34 @@ function Login() {
     const dispatch = useDispatch();
 
     const handleLogin = async () => {
-        const resLogin = await argviewer.post("usuarios/login", {
+        let res = await argviewer.post("usuarios/login", {
             nickname: nickname,
             senha: senha,
         });
-        if (resLogin.status === 200) {
-            dispatch(fetchUserByNickname(nickname));
+        if (res.status === 200) {
+            res = await argviewer.get(`usuarios?value=${nickname}`);
+            if (res.status === 200) {
+                dispatch(login(res.data[0]));
+            }
         }
     };
 
     return (
-        <Col style={{ margin: "auto" }}>
+        <Col
+            style={{
+                margin: "auto",
+                height: "100%",
+                display: "flex",
+                flexDirection: "column",
+            }}
+        >
             <NavBar></NavBar>
             <Card
                 style={{
+                    textAlign: "center",
                     alignItems: "center",
                     width: "450px",
                     margin: "auto",
-                    textAlign: "center",
-                    marginTop: "10%",
                     borderRadius: "15px",
                 }}
             >
