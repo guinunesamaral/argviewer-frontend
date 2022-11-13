@@ -1,0 +1,12 @@
+.criarProposicao {
+    display: flex;
+    align-items: center;
+}
+
+.criarProposicao__wrapper {
+    align-items: center;
+    width: 410px;
+    margin: 0 auto;
+    text-align: center;
+    border-radius: 15px;
+}

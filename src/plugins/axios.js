@@ -1,13 +1,11 @@
 import axios from "axios";
-
-const ARGVIEWER_HEROKU = "https://argviewer-api.herokuapp.com/api/";
-const SENTENCE_ANALYZER_HEROKU =
-    "https://argviewer-sentence-analyzer.herokuapp.com/api/";
+import { ARGVIEWER_API, SENTENCE_ANALYZER_API } from "../shared/constants";
 
 export const argviewer = axios.create({
-    baseURL: ARGVIEWER_HEROKU,
+    baseURL: ARGVIEWER_API,
     timeout: 30000,
-    mode: "no-cors",
+    maxBodyLength: Infinity,
+    maxContentLength: Infinity,
     headers: {
         "Content-Type": "application/json",
         "Access-Control-Allow-Origin": "*",
@@ -15,7 +13,7 @@ export const argviewer = axios.create({
 });
 
 export const sentenceAnalyzer = axios.create({
-    baseURL: SENTENCE_ANALYZER_HEROKU,
+    baseURL: SENTENCE_ANALYZER_API,
     timeout: 30000,
     headers: {
         "Content-Type": "application/json",

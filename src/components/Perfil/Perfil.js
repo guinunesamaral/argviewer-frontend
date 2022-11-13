@@ -8,26 +8,23 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Figure from "react-bootstrap/Figure";
 import Modal from "react-bootstrap/Modal";
-import Alert from "react-bootstrap/Alert";
-import PreviaDebate from "./PreviaDebate";
-import NavBar from "./NavBar";
+import PreviaDebate from "../PreviaDebate/PreviaDebate";
+import { useLocation, useNavigate } from "react-router-dom";
 
-function Perfil(props) {
-    const voltar = () => {
-        window.history.back();
+function Perfil() {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { usuario } = { ...location.state };
+
+    const goToPrincipal = () => {
+        navigate("/principal");
     };
     const [show, setShow] = useState(false);
-    const [showAlertSuccess, setShowAlertSuccess] = useState(false);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-    const handleCloseAndShowAlert = () => {
-        setShow(false);
-        setShowAlertSuccess(true);
-    };
 
     return (
         <Col style={{ margin: "auto" }}>
-            <NavBar></NavBar>
             <Card
                 style={{
                     alignItems: "center",
@@ -41,10 +38,8 @@ function Perfil(props) {
                 <Card.Body style={{ width: "380px" }}>
                     <Row>
                         <FontAwesomeIcon
-                            onClick={(e) => {
-                                voltar();
-                            }}
-                            style={{ float: "left", cursor: "pointer" }}
+                            onClick={goToPrincipal.bind(this)}
+                            className="c-pointer"
                             icon={faArrowLeft}
                         />
                     </Row>
@@ -55,10 +50,15 @@ function Perfil(props) {
                     </Card.Title>
                     <Figure>
                         <Figure.Image
-                            width={100}
-                            height={100}
+                            style={{ borderRadius: "50%" }}
+                            width={70}
+                            height={70}
                             alt="150x150"
-                            src={require("../img/perfil.jpg")}
+                            src={
+                                usuario.foto
+                                    ? `data:image/png;base64,${usuario.foto}`
+                                    : "../../img/perfil.jpg"
+                            }
                         />
                     </Figure>
                     <Form>
@@ -66,7 +66,7 @@ function Perfil(props) {
                             <Form.Label>Nome de usuário</Form.Label>
                             <Form.Control
                                 disabled
-                                defaultValue={"dnscstr"}
+                                defaultValue={usuario.nome}
                                 placeholder="Insira seu nome"
                             />
                         </Form.Group>
@@ -78,7 +78,7 @@ function Perfil(props) {
                             <Form.Label>Email</Form.Label>
                             <Form.Control
                                 disabled
-                                defaultValue="dnscstr@email.com"
+                                defaultValue={usuario.email}
                                 type="email"
                                 placeholder="Insira seu email"
                             />
@@ -89,7 +89,10 @@ function Perfil(props) {
                             controlId="formBasicPassword"
                         >
                             <Form.Label>Apelido</Form.Label>
-                            <Form.Control disabled defaultValue="dnscstr" />
+                            <Form.Control
+                                disabled
+                                defaultValue={usuario.nickname}
+                            />
                         </Form.Group>
 
                         <Button
@@ -108,9 +111,6 @@ function Perfil(props) {
                             Exibir debates ativos
                         </Button>
                     </Form>
-                    <Alert show={showAlertSuccess} variant="success">
-                        Dados alterados com sucesso!
-                    </Alert>
                 </Card.Body>
             </Card>
             <Modal scrollable show={show} onHide={handleClose}>
@@ -118,7 +118,7 @@ function Perfil(props) {
                     <Modal.Title>Debates ativos</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                    <PreviaDebate></PreviaDebate>
+                    <PreviaDebate />
                 </Modal.Body>
                 <Modal.Footer></Modal.Footer>
             </Modal>

@@ -3,7 +3,7 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Figure from "react-bootstrap/Figure";
@@ -11,15 +11,45 @@ import Modal from "react-bootstrap/Modal";
 import Alert from "react-bootstrap/Alert";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { argviewer } from "../plugins/axios";
+import { goToPrincipal } from "../../shared/navigate";
+import { updateUsuario } from "../../shared/requests";
+import Usuario from "../../shared/Usuario";
+import { useRef } from "react";
+import "./AlterarDados.css";
 
 function AlterarDados(props) {
-    const state = useSelector((state) => state.user);
+    const usuario = useSelector((state) => state.usuario);
     const navigate = useNavigate();
+    const imageInputRef = useRef();
 
-    const voltar = () => {
-        navigate("/principal");
+    const [nome, setNome] = useState(usuario.data.nome);
+    const [email, setEmail] = useState(usuario.data.email);
+    const [isAnonimo, setIsAnonimo] = useState(usuario.data.anonimo);
+    const [senha, setSenha] = useState("");
+    const [senha2, setSenha2] = useState("");
+    const [foto, setFoto] = useState(usuario.data.foto);
+
+    const handleUpdate = async () => {
+        const res = await updateUsuario(
+            new Usuario(usuario.id, nome, email, senha, foto, usuario.anonimo)
+        );
+        return res.status;
     };
+
+    useEffect(() => {
+        imageInputRef.current.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const base64String = reader.result
+                    .replace("data:", "")
+                    .replace(/^.+,/, "");
+                setFoto(base64String);
+            };
+            reader.readAsDataURL(file);
+        });
+    }, []);
+
     const [show, setShow] = useState(false);
     const [showAlertSuccess, setShowAlertSuccess] = useState(false);
     const handleClose = () => setShow(false);
@@ -30,73 +60,30 @@ function AlterarDados(props) {
         setShowAlertSuccess(status === 200);
     };
 
-    const [nome, setNome] = useState(state.data.nome);
-    const [email, setEmail] = useState(state.data.email);
-    const [senha, setSenha] = useState("");
-    const [senha2, setSenha2] = useState("");
-
-    const handleUpdate = async () => {
-        const res = await argviewer.put("usuarios", {
-            id: state.id,
-            nome: nome,
-            nickname: state.nickname,
-            email: email,
-            senha: senha,
-            foto: state.foto,
-            eloId: state.eloId,
-            anonimo: state.anonimo,
-            moderador: state.moderador,
-        });
-        return res.status;
-    };
-
-    const handleFotoClick = () => {
-        const reader = new FileReader();
-        reader.addEventListener("load", () => {
-            // const uploadedImage = reader.result;
-        });
-        // reader.readAsDataURL(this.files[0]);
-    };
-
     return (
-        <Col style={{ margin: "auto" }}>
-            <Card
-                style={{
-                    alignItems: "center",
-                    width: "450px",
-                    margin: "auto",
-                    textAlign: "center",
-                    marginTop: "2%",
-                    borderRadius: "15px",
-                }}
-            >
-                <Card.Body style={{ width: "380px" }}>
+        <Col>
+            <Card className="alterarDados__wrapper">
+                <Card.Body className="body">
                     <Row>
                         <FontAwesomeIcon
-                            onClick={(e) => {
-                                voltar();
-                            }}
-                            style={{ float: "left", cursor: "pointer" }}
+                            onClick={goToPrincipal.bind(this, navigate)}
+                            className="c-pointer"
                             icon={faArrowLeft}
                         />
                     </Row>
-                    <Card.Title
-                        style={{ textAlign: "center", marginBottom: "25px" }}
-                    >
-                        Alterar Dados
-                    </Card.Title>
-                    <Figure
-                        style={{ cursor: "pointer" }}
-                        onClick={handleFotoClick}
-                    >
+                    <Card.Title className="title">Alterar Dados</Card.Title>
+                    <Figure>
                         <Figure.Image
-                            style={{ borderRadius: "50%" }}
+                            className="border-rounded"
                             width={100}
                             height={100}
-                            alt="150x150"
-                            src={`data:image/png;base64,${state.data.foto}`}
+                            alt="100x100"
+                            src={`data:image/png;base64,${foto}`}
                         />
                     </Figure>
+                    <Form.Group controlId="formFile" className="mb-3">
+                        <Form.Control ref={imageInputRef} type="file" />
+                    </Form.Group>
                     <Form>
                         <Form.Group className="mb-3" controlId="nome">
                             <Form.Label>Nome</Form.Label>
@@ -137,14 +124,23 @@ function AlterarDados(props) {
                             />
                         </Form.Group>
 
+                        <Form.Check
+                            className="mb-3"
+                            type="switch"
+                            id="custom-switch"
+                            label={
+                                isAnonimo
+                                    ? "Mostrar seus dados?"
+                                    : "Tornar-se anônimo"
+                            }
+                            checked={isAnonimo}
+                            onChange={(e) => setIsAnonimo(e.target.value)}
+                        />
+
                         <Button
-                            onClick={handleShow}
-                            style={{
-                                display: "flex",
-                                margin: "auto",
-                                marginBottom: "15px",
-                            }}
+                            className="confirmarAlteracoes"
                             variant="primary"
+                            onClick={handleShow}
                         >
                             Confirmar Alterações
                         </Button>

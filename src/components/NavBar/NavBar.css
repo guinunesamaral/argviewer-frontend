@@ -1,0 +1,36 @@
+.navBar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #392e5c;
+    padding: 10px;
+}
+
+.navBar__personalData {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    flex: 1;
+    padding: 0;
+}
+
+.navBar__homeAndSearch {
+    display: flex;
+    align-items: center;
+    flex: 3;
+    max-width: 600px;
+    padding: 0;
+}
+
+.personalData__foto {
+    margin: 10px 3px 10px 0;
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+.navBar__doorLocked {
+    display: flex;
+    justify-content: end;
+    flex: 1;
+    padding: 0;
+}

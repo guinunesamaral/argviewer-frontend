@@ -1,0 +1,26 @@
+.proposicao {
+    border-radius: 8px;
+    border: none;
+}
+
+.proposicao__body {
+    padding-top: 10px;
+    padding-bottom: 0;
+}
+
+.proposicao__wrapper {
+    display: flex;
+    justify-content: space-between;
+}
+
+.proposicao__usuario--data {
+    display: flex;
+    align-items: center;
+}
+
+.proposicao__foto {
+    cursor: pointer;
+    margin-right: 5px;
+    margin-bottom: -3px;
+    border-radius: 50%;
+}

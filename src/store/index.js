@@ -10,19 +10,24 @@ import {
     PURGE,
     REGISTER,
 } from "redux-persist";
-import userReducer from "./userSlice";
-import proposicaoReducer from "./proposicaoSlice";
+import usuarioReducer from "./usuarioSlice";
+import proposicoesReducer from "./proposicoesSlice";
+import { usuarioApi } from "./usuarioApi";
 
 const persistConfig = {
     key: "root",
     storage,
 };
-const persistedReducer = persistReducer(persistConfig, userReducer);
+const persistedUsuarioReducer = persistReducer(persistConfig, usuarioReducer);
+// const persistedUsuarioReducer = persistReducer(
+//     persistConfig,
+//     usuarioApi.reducer
+// );
 
 export const store = configureStore({
     reducer: {
-        user: persistedReducer,
-        proposicao: proposicaoReducer,
+        usuario: persistedUsuarioReducer,
+        proposicoes: proposicoesReducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware({
@@ -36,6 +41,6 @@ export const store = configureStore({
                     REGISTER,
                 ],
             },
-        }),
+        }).concat(usuarioApi.middleware),
 });
 export const persistor = persistStore(store);

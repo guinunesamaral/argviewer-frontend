@@ -1,0 +1,14 @@
+.login {
+    display: flex;
+    flex-direction: column;
+    margin: auto;
+    padding: 0;
+}
+
+.login__wrapper {
+    text-align: center;
+    align-items: center;
+    width: 450px;
+    margin: auto;
+    border-radius: 15px;
+}

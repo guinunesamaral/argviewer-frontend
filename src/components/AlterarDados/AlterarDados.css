@@ -1,0 +1,22 @@
+.alterarDados__wrapper {
+    align-items: center;
+    width: 450px;
+    text-align: center;
+    margin: 2% auto;
+    border-radius: 15px;
+}
+
+.body {
+    width: 380px;
+}
+
+.title {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.confirmarAlteracoes {
+    display: flex;
+    margin: auto;
+    margin: 40px auto 10px auto;
+}

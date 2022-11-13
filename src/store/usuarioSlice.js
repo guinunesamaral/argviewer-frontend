@@ -12,10 +12,10 @@ const initialState = {
     isLoggedIn: false,
 };
 
-const userAdapter = createEntityAdapter();
+const usuarioAdapter = createEntityAdapter();
 
-export const userSlice = createSlice({
-    name: "user",
+export const usuarioSlice = createSlice({
+    name: "usuario",
     initialState,
     reducers: {
         login: (_, action) => {
@@ -23,7 +23,7 @@ export const userSlice = createSlice({
                 data: {
                     id: action.payload.id,
                     nome: action.payload.nome,
-                    nickname: action.payload.name,
+                    nickname: action.payload.nickname,
                     email: action.payload.email,
                     senha: action.payload.senha,
                     foto: action.payload.foto,
@@ -60,11 +60,11 @@ export const userSlice = createSlice({
     },
     extraReducers: (builder) => {
         builder.addCase(PURGE, (state) => {
-            userAdapter.removeAll(state);
+            usuarioAdapter.removeAll(state);
         });
     },
 });
 
-export const { login, logout, cadastro, update } = userSlice.actions;
+export const { login, logout, cadastro, update } = usuarioSlice.actions;
 
-export default userSlice.reducer;
+export default usuarioSlice.reducer;

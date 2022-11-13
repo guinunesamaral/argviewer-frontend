@@ -6,7 +6,7 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { argviewer } from "../plugins/axios";
+import { argviewer } from "../../plugins/axios";
 import { useNavigate } from "react-router-dom";
 
 function Cadastro(props) {
