@@ -20,7 +20,8 @@
 
 .proposicao__foto {
     cursor: pointer;
-    margin-right: 5px;
-    margin-bottom: -3px;
+    min-width: 30px;
+    min-height: 30px;
+    margin: 0 5px 0 0;
     border-radius: 50%;
 }

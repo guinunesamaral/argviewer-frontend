@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { addAll } from "../../store/proposicoesSlice";
 import VisualizarProposicao from "../VisualizarProposicao/VisualizarProposicao";
 import { findProposicoesByUsuarioId } from "../../shared/requests";
+import Loader from "../Loader/Loader";
 
 function TelaPrincipal() {
     const [loading, setLoading] = useState(false);
@@ -23,11 +24,9 @@ function TelaPrincipal() {
     }, []);
 
     return (
-        <div className="telaPrincipal" style={{ height: "100%" }}>
+        <div style={{ height: "100%" }}>
             {loading ? (
-                <div className="loader-container">
-                    <div className="spinner"></div>
-                </div>
+                <Loader />
             ) : (
                 <>
                     {proposicoes.data.length &&

@@ -9,32 +9,29 @@ import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import Figure from "react-bootstrap/Figure";
 import Modal from "react-bootstrap/Modal";
 import Alert from "react-bootstrap/Alert";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { goToPrincipal } from "../../shared/navigate";
-import { updateUsuario } from "../../shared/requests";
-import Usuario from "../../shared/Usuario";
+import { findUsuarioByNickname, updateUsuario } from "../../shared/requests";
 import { useRef } from "react";
+import { login } from "../../store/usuarioSlice";
+import fotoPadrao from "../../img/perfil.jpg";
 import "./AlterarDados.css";
+import Loader from "../Loader/Loader";
 
 function AlterarDados(props) {
     const usuario = useSelector((state) => state.usuario);
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const imageInputRef = useRef();
+    const [loading, setLoading] = useState(false);
 
+    const [foto, setFoto] = useState(usuario.data.foto);
     const [nome, setNome] = useState(usuario.data.nome);
     const [email, setEmail] = useState(usuario.data.email);
-    const [isAnonimo, setIsAnonimo] = useState(usuario.data.anonimo);
     const [senha, setSenha] = useState("");
     const [senha2, setSenha2] = useState("");
-    const [foto, setFoto] = useState(usuario.data.foto);
-
-    const handleUpdate = async () => {
-        const res = await updateUsuario(
-            new Usuario(usuario.id, nome, email, senha, foto, usuario.anonimo)
-        );
-        return res.status;
-    };
+    const [isAnonimo, setIsAnonimo] = useState(usuario.data.anonimo);
 
     useEffect(() => {
         imageInputRef.current.addEventListener("change", (e) => {
@@ -50,123 +47,203 @@ function AlterarDados(props) {
         });
     }, []);
 
+    const [failureMessage, setFailureMessage] = useState("");
     const [show, setShow] = useState(false);
-    const [showAlertSuccess, setShowAlertSuccess] = useState(false);
+    const [showAlertSuccess, setShowAlertSuccess] = useState(undefined);
     const handleClose = () => setShow(false);
     const handleShow = () => setShow(true);
-    const handleCloseAndShowAlert = () => {
+
+    const validarDados = () => {
+        let valid = true;
+
+        if (senha.length < 6 || senha2.length < 6) {
+            valid = false;
+            setShowAlertSuccess(false);
+            setFailureMessage("As senhas devem possuir ao menos 6 caracteres!");
+        }
+        if (senha !== senha2) {
+            valid = false;
+            setShowAlertSuccess(false);
+            setFailureMessage(`${failureMessage}\nAs senhas devem coincidir!`);
+        }
+
+        return valid;
+    };
+
+    const handleUpdate = async () => {
+        const res = await updateUsuario({
+            id: usuario.data.id,
+            nome,
+            email,
+            senha,
+            foto,
+            isAnonimo,
+        });
+        return res.status;
+    };
+
+    const handleCloseAndShowAlert = async () => {
         setShow(false);
-        const status = handleUpdate();
-        setShowAlertSuccess(status === 200);
+        setShowAlertSuccess(undefined);
+
+        const valid = validarDados();
+        if (valid) {
+            setLoading(true);
+            const status = await handleUpdate();
+            if (status !== 200) {
+                setFailureMessage("Houve um problema ao atualizar seus dados!");
+            } else {
+                setShowAlertSuccess(status === 200);
+                const res = await findUsuarioByNickname(usuario.data.nickname);
+                if (res.status === 200) {
+                    dispatch(login(res.data[0]));
+                }
+                setLoading(false);
+            }
+        }
     };
 
     return (
-        <Col>
-            <Card className="alterarDados__wrapper">
-                <Card.Body className="body">
-                    <Row>
-                        <FontAwesomeIcon
-                            onClick={goToPrincipal.bind(this, navigate)}
-                            className="c-pointer"
-                            icon={faArrowLeft}
-                        />
-                    </Row>
-                    <Card.Title className="title">Alterar Dados</Card.Title>
-                    <Figure>
-                        <Figure.Image
-                            className="border-rounded"
-                            width={100}
-                            height={100}
-                            alt="100x100"
-                            src={`data:image/png;base64,${foto}`}
-                        />
-                    </Figure>
-                    <Form.Group controlId="formFile" className="mb-3">
-                        <Form.Control ref={imageInputRef} type="file" />
-                    </Form.Group>
-                    <Form>
-                        <Form.Group className="mb-3" controlId="nome">
-                            <Form.Label>Nome</Form.Label>
-                            <Form.Control
-                                placeholder="Insira seu nome"
-                                value={nome}
-                                onChange={(e) => setNome(e.target.value)}
-                            />
-                        </Form.Group>
+        <Col style={{ height: "100%" }}>
+            {loading ? (
+                <Loader />
+            ) : (
+                <>
+                    <Card className="alterarDados__wrapper">
+                        <Card.Body className="body">
+                            <Row>
+                                <FontAwesomeIcon
+                                    onClick={goToPrincipal.bind(this, navigate)}
+                                    className="c-pointer"
+                                    icon={faArrowLeft}
+                                />
+                            </Row>
+                            <Card.Title className="title">
+                                Alterar Dados
+                            </Card.Title>
+                            <Figure>
+                                <Figure.Image
+                                    style={{
+                                        minHeight: "100px",
+                                        minWidth: "100px",
+                                    }}
+                                    className="border-rounded"
+                                    width={100}
+                                    height={100}
+                                    alt="100x100"
+                                    src={
+                                        foto
+                                            ? `data:image/png;base64,${foto}`
+                                            : fotoPadrao
+                                    }
+                                />
+                            </Figure>
+                            <Form.Group controlId="formFile" className="mb-3">
+                                <Form.Control ref={imageInputRef} type="file" />
+                            </Form.Group>
+                            <Form>
+                                <Form.Group className="mb-3" controlId="nome">
+                                    <Form.Label>Nome</Form.Label>
+                                    <Form.Control
+                                        placeholder="Insira seu nome"
+                                        value={nome}
+                                        onChange={(e) =>
+                                            setNome(e.target.value)
+                                        }
+                                    />
+                                </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="email">
-                            <Form.Label>Email</Form.Label>
-                            <Form.Control
-                                type="email"
-                                placeholder="Insira seu email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                            />
-                        </Form.Group>
+                                <Form.Group className="mb-3" controlId="email">
+                                    <Form.Label>Email</Form.Label>
+                                    <Form.Control
+                                        type="email"
+                                        placeholder="Insira seu email"
+                                        value={email}
+                                        onChange={(e) =>
+                                            setEmail(e.target.value)
+                                        }
+                                    />
+                                </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="senha1">
-                            <Form.Label>Senha</Form.Label>
-                            <Form.Control
-                                type="password"
-                                placeholder="Insira sua senha"
-                                value={senha}
-                                onChange={(e) => setSenha(e.target.value)}
-                            />
-                        </Form.Group>
+                                <Form.Group className="mb-3" controlId="senha1">
+                                    <Form.Label>Senha</Form.Label>
+                                    <Form.Control
+                                        type="password"
+                                        placeholder="Insira sua senha"
+                                        value={senha}
+                                        onChange={(e) =>
+                                            setSenha(e.target.value)
+                                        }
+                                    />
+                                </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="senha2">
-                            <Form.Label>Repetir Senha</Form.Label>
-                            <Form.Control
-                                type="password"
-                                placeholder="Confirme sua senha"
-                                value={senha2}
-                                onChange={(e) => setSenha2(e.target.value)}
-                            />
-                        </Form.Group>
+                                <Form.Group className="mb-3" controlId="senha2">
+                                    <Form.Label>Repetir Senha</Form.Label>
+                                    <Form.Control
+                                        type="password"
+                                        placeholder="Confirme sua senha"
+                                        value={senha2}
+                                        onChange={(e) =>
+                                            setSenha2(e.target.value)
+                                        }
+                                    />
+                                </Form.Group>
 
-                        <Form.Check
-                            className="mb-3"
-                            type="switch"
-                            id="custom-switch"
-                            label={
-                                isAnonimo
-                                    ? "Mostrar seus dados?"
-                                    : "Tornar-se anônimo"
-                            }
-                            checked={isAnonimo}
-                            onChange={(e) => setIsAnonimo(e.target.value)}
-                        />
+                                <Form.Check
+                                    className="mb-3"
+                                    type="switch"
+                                    id="custom-switch"
+                                    label="Anônimo"
+                                    checked={isAnonimo}
+                                    onChange={(e) => setIsAnonimo(!isAnonimo)}
+                                />
 
-                        <Button
-                            className="confirmarAlteracoes"
-                            variant="primary"
-                            onClick={handleShow}
-                        >
-                            Confirmar Alterações
-                        </Button>
-                    </Form>
-                    <Alert show={showAlertSuccess} variant="success">
-                        Dados alterados com sucesso!
-                    </Alert>
-                </Card.Body>
-            </Card>
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Confirmar Alteração dos Dados</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    Você está efetuando alterações em seu cadastro. Clique em
-                    Confirmar para prosseguir
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Fechar
-                    </Button>
-                    <Button variant="primary" onClick={handleCloseAndShowAlert}>
-                        Confirmar
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+                                <Button
+                                    className="confirmarAlteracoes"
+                                    variant="primary"
+                                    onClick={handleShow}
+                                >
+                                    Confirmar Alterações
+                                </Button>
+                            </Form>
+                            <Alert
+                                show={showAlertSuccess === true}
+                                variant="success"
+                            >
+                                Dados alterados com sucesso!
+                            </Alert>
+                            <Alert
+                                show={showAlertSuccess === false}
+                                variant="danger"
+                            >
+                                {failureMessage}
+                            </Alert>
+                        </Card.Body>
+                    </Card>
+                    <Modal show={show} onHide={handleClose}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>
+                                Confirmar Alteração dos Dados
+                            </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            Você está efetuando alterações em seu cadastro.
+                            Clique em Confirmar para prosseguir
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={handleClose}>
+                                Fechar
+                            </Button>
+                            <Button
+                                variant="primary"
+                                onClick={handleCloseAndShowAlert}
+                            >
+                                Confirmar
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+                </>
+            )}
         </Col>
     );
 }

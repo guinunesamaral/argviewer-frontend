@@ -3,7 +3,12 @@ import { useSelector } from "react-redux";
 import { persistor } from "../../store/index";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
-import { goToAlterarDados, goToPrincipal } from "../../shared/navigate";
+import {
+    goToAlterarDados,
+    goToLogin,
+    goToPrincipal,
+} from "../../shared/navigate";
+import fotoPadrao from "../../img/perfil.jpg";
 import "./NavBar.css";
 
 function NavBar() {
@@ -12,7 +17,7 @@ function NavBar() {
 
     const logout = async () => {
         await persistor.purge();
-        window.location.reload();
+        goToLogin(navigate);
     };
 
     return (
@@ -27,7 +32,7 @@ function NavBar() {
                             src={
                                 usuario.data.foto
                                     ? `data:image/png;base64,${usuario.data.foto}`
-                                    : "../../img/perfil.jpg"
+                                    : fotoPadrao
                             }
                             onClick={goToAlterarDados.bind(this, navigate)}
                         />
@@ -39,7 +44,7 @@ function NavBar() {
             </div>
             <div className="navBar__homeAndSearch">
                 <FontAwesomeIcon
-                    className="c-pointer"
+                    className="navBar__homeIcon"
                     icon="fa-solid fa-house"
                     color="black"
                     size="xl"

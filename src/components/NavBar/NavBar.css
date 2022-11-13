@@ -2,8 +2,9 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: #392e5c;
+    min-height: 80px;
     padding: 10px;
+    background-color: #392e5c;
 }
 
 .navBar__personalData {
@@ -15,6 +16,7 @@
 }
 
 .navBar__homeAndSearch {
+    position: relative;
     display: flex;
     align-items: center;
     flex: 3;
@@ -22,10 +24,20 @@
     padding: 0;
 }
 
-.personalData__foto {
-    margin: 10px 3px 10px 0;
-    border-radius: 50%;
+.navBar__homeIcon {
     cursor: pointer;
+    position: absolute;
+    top: 50%;
+    left: -25px;
+    transform: translate(0, -55%);
+}
+
+.personalData__foto {
+    cursor: pointer;
+    min-width: 40px;
+    min-height: 40px;
+    margin: 10px 5px 10px 0;
+    border-radius: 50%;
 }
 
 .navBar__doorLocked {

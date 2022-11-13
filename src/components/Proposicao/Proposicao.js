@@ -2,6 +2,7 @@ import Card from "react-bootstrap/Card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Figure } from "react-bootstrap";
 import { goToPerfil, goToVisualizarProposicao } from "../../shared/navigate";
+import fotoPadrao from "../../img/perfil.jpg";
 import "./Proposicao.css";
 
 function Proposicao(props) {
@@ -19,7 +20,7 @@ function Proposicao(props) {
                             src={
                                 usuario.foto
                                     ? `data:image/png;base64,${usuario.foto}`
-                                    : "../../img/perfil.jpg"
+                                    : fotoPadrao
                             }
                             onClick={goToPerfil.bind(this, navigate, usuario)}
                         />

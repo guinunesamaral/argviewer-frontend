@@ -1,5 +1,15 @@
 import { argviewer } from "../plugins/axios";
 
+export const cadastrarUsuario = async (usuario) => {
+    return await argviewer.post("usuarios", {
+        nome: usuario.nome,
+        nickname: usuario.nickname,
+        email: usuario.email,
+        senha: usuario.senha,
+        foto: usuario.foto,
+    });
+};
+
 export const login = async (nickname, senha) => {
     return await argviewer.post("usuarios/login", {
         nickname: nickname,
@@ -19,11 +29,10 @@ export const updateUsuario = async (usuario) => {
     return await argviewer.put("usuarios", {
         id: usuario.id,
         nome: usuario.nome,
-        nickname: usuario.nickname,
         email: usuario.email,
         senha: usuario.senha,
         foto: usuario.foto,
-        anonimo: usuario.anonimo,
+        anonimo: usuario.isAnonimo,
     });
 };
 

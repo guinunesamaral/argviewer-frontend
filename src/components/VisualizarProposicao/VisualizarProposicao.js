@@ -93,7 +93,7 @@ function VisualizarProposicao(props) {
                             </div>
                             {proposicao.respostas &&
                                 proposicao.respostas
-                                    .filter((r) => !r.isRespostaNegativa)
+                                    .filter((r) => !r.isRespostaContraria)
                                     .map((resposta) => (
                                         <Proposicao
                                             key={resposta.id}
@@ -121,7 +121,7 @@ function VisualizarProposicao(props) {
                             </div>
                             {proposicao.respostas &&
                                 proposicao.respostas
-                                    .filter((r) => r.isRespostaNegativa)
+                                    .filter((r) => r.isRespostaContraria)
                                     .map((resposta) => (
                                         <Proposicao
                                             key={resposta.id}

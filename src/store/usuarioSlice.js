@@ -27,32 +27,7 @@ export const usuarioSlice = createSlice({
                     email: action.payload.email,
                     senha: action.payload.senha,
                     foto: action.payload.foto,
-                },
-                isLoggedIn: true,
-            };
-        },
-        cadastro: (_, action) => {
-            return {
-                data: {
-                    id: action.payload.id,
-                    nome: action.payload.nome,
-                    nickname: action.payload.name,
-                    email: action.payload.email,
-                    senha: action.payload.senha,
-                    foto: action.payload.foto,
-                },
-                isLoggedIn: true,
-            };
-        },
-        update: (_, action) => {
-            return {
-                data: {
-                    id: action.payload.id,
-                    nome: action.payload.nome,
-                    nickname: action.payload.name,
-                    email: action.payload.email,
-                    senha: action.payload.senha,
-                    foto: action.payload.foto,
+                    anonimo: action.payload.anonimo,
                 },
                 isLoggedIn: true,
             };
@@ -65,6 +40,6 @@ export const usuarioSlice = createSlice({
     },
 });
 
-export const { login, logout, cadastro, update } = usuarioSlice.actions;
+export const { login } = usuarioSlice.actions;
 
 export default usuarioSlice.reducer;

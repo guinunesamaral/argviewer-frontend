@@ -1,3 +1,7 @@
+export const goToLogin = (navigate) => {
+    navigate("/");
+};
+
 export const goToPrincipal = (navigate) => {
     navigate("/principal");
 };
@@ -18,12 +22,12 @@ export const goToVisualizarProposicao = (navigate, proposicao, usuario) => {
 export const goToCriarResposta = (
     navigate,
     proposicaoId,
-    isRespostaNegativa
+    isRespostaContraria
 ) => {
     navigate(`/criarProposicao`, {
         state: {
             proposicaoId: proposicaoId,
-            isRespostaNegativa: isRespostaNegativa,
+            isRespostaContraria: isRespostaContraria,
         },
     });
 };

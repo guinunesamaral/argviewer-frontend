@@ -8,6 +8,7 @@ import Form from "react-bootstrap/Form";
 import { login as loginAction } from "../../store/usuarioSlice";
 import { findUsuarioByNickname, login } from "../../shared/requests";
 import "./Login.css";
+import Loader from "../Loader/Loader";
 
 function Login() {
     const [loading, setLoading] = useState(false);
@@ -32,9 +33,7 @@ function Login() {
     return (
         <Col className="login">
             {loading ? (
-                <div className="loader-container">
-                    <div className="spinner"></div>
-                </div>
+                <Loader />
             ) : (
                 <Card className="login__wrapper">
                     <Card.Body>

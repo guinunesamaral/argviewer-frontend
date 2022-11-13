@@ -1,8 +1,12 @@
 import axios from "axios";
-import { ARGVIEWER_API, SENTENCE_ANALYZER_API } from "../shared/constants";
+import {
+    ARGVIEWER_API,
+    ARGVIEWER_LOCALHOST,
+    SENTENCE_ANALYZER_API,
+} from "../shared/constants";
 
 export const argviewer = axios.create({
-    baseURL: ARGVIEWER_API,
+    baseURL: ARGVIEWER_LOCALHOST,
     timeout: 30000,
     maxBodyLength: Infinity,
     maxContentLength: Infinity,
