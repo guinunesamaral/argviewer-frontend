@@ -4,8 +4,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 import {
     goToCriarResposta,
     goToVisualizarProposicao,
-} from "../../shared/navigate";
+} from "../../shared/navigations";
 import { deleteProposicao } from "../../shared/requests";
+import { formatText } from "../../shared/functions";
 import "./VisualizarProposicao.css";
 
 function VisualizarProposicao(props) {
@@ -16,18 +17,17 @@ function VisualizarProposicao(props) {
         ? { ...props }
         : { ...location.state };
 
-    const formatText = (text) => {
-        return `${text.charAt(0).toUpperCase()}${text.slice(1)}`;
-    };
-
     const handleDelete = async (proposicaoId) => {
         await deleteProposicao(proposicaoId);
         await fetchProposicoes();
     };
 
     return (
-        <div className="mh-20 mv-20">
-            <div key={proposicao.id} className={`visualizarProposicao`}>
+        <div className="visualizarProposicao">
+            <div
+                key={proposicao.id}
+                className={`visualizarProposicao__wrapper`}
+            >
                 <div>
                     <div className="visualizarProposicao__content">
                         <h4
@@ -87,19 +87,18 @@ function VisualizarProposicao(props) {
                                         this,
                                         navigate,
                                         proposicao.id,
-                                        false
+                                        true
                                     )}
                                 />
                             </div>
                             {proposicao.respostas &&
                                 proposicao.respostas
-                                    .filter((r) => !r.isRespostaContraria)
+                                    .filter((r) => r.isRespostaFavoravel)
                                     .map((resposta) => (
                                         <Proposicao
                                             key={resposta.id}
                                             usuario={resposta.usuario}
                                             proposicao={resposta}
-                                            formatText={formatText}
                                             navigate={navigate}
                                         />
                                     ))}
@@ -115,19 +114,18 @@ function VisualizarProposicao(props) {
                                         this,
                                         navigate,
                                         proposicao.id,
-                                        true
+                                        false
                                     )}
                                 />
                             </div>
                             {proposicao.respostas &&
                                 proposicao.respostas
-                                    .filter((r) => r.isRespostaContraria)
+                                    .filter((r) => !r.isRespostaFavoravel)
                                     .map((resposta) => (
                                         <Proposicao
                                             key={resposta.id}
                                             usuario={resposta.usuario}
                                             proposicao={resposta}
-                                            formatText={formatText}
                                             navigate={navigate}
                                         />
                                     ))}

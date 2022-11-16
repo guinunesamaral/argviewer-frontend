@@ -21,15 +21,15 @@ export const usuarioSlice = createSlice({
         login: (_, action) => {
             return {
                 data: {
-                    id: action.payload.id,
-                    nome: action.payload.nome,
-                    nickname: action.payload.nickname,
-                    email: action.payload.email,
-                    senha: action.payload.senha,
-                    foto: action.payload.foto,
-                    anonimo: action.payload.anonimo,
+                    ...action.payload,
                 },
                 isLoggedIn: true,
+            };
+        },
+        logout: () => {
+            return {
+                data: {},
+                isLoggedIn: false,
             };
         },
     },
@@ -40,6 +40,6 @@ export const usuarioSlice = createSlice({
     },
 });
 
-export const { login } = usuarioSlice.actions;
+export const { login, logout } = usuarioSlice.actions;
 
 export default usuarioSlice.reducer;

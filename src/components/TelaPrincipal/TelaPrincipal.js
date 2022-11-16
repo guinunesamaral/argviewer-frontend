@@ -4,12 +4,13 @@ import { addAll } from "../../store/proposicoesSlice";
 import VisualizarProposicao from "../VisualizarProposicao/VisualizarProposicao";
 import { findProposicoesByUsuarioId } from "../../shared/requests";
 import Loader from "../Loader/Loader";
+import BigPlusProposicao from "../Plus/BigPlusProposicao";
 
 function TelaPrincipal() {
-    const [loading, setLoading] = useState(false);
+    const dispatch = useDispatch();
     const usuario = useSelector((state) => state.usuario);
     const proposicoes = useSelector((state) => state.proposicoes);
-    const dispatch = useDispatch();
+    const [loading, setLoading] = useState(false);
 
     const fetchProposicoes = async () => {
         setLoading(true);
@@ -26,19 +27,21 @@ function TelaPrincipal() {
     return (
         <div style={{ height: "100%" }}>
             {loading ? (
-                <Loader />
+                <Loader message="Buscando proposições" />
+            ) : proposicoes.data.length ? (
+                <div>
+                    {proposicoes.data.map((item) => (
+                        <VisualizarProposicao
+                            key={item.id}
+                            proposicao={item}
+                            usuario={usuario}
+                            fetchProposicoes={fetchProposicoes}
+                        />
+                    ))}
+                    <BigPlusProposicao />
+                </div>
             ) : (
-                <>
-                    {proposicoes.data.length &&
-                        proposicoes.data.map((item) => (
-                            <VisualizarProposicao
-                                key={item.id}
-                                proposicao={item}
-                                usuario={usuario}
-                                fetchProposicoes={fetchProposicoes}
-                            />
-                        ))}
-                </>
+                <BigPlusProposicao />
             )}
         </div>
     );

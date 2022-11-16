@@ -19,15 +19,19 @@ export const goToVisualizarProposicao = (navigate, proposicao, usuario) => {
     });
 };
 
+export const goToCriarProposicao = (navigate) => {
+    navigate(`/criarProposicao`);
+};
+
 export const goToCriarResposta = (
     navigate,
     proposicaoId,
-    isRespostaContraria
+    respostaFavoravel
 ) => {
     navigate(`/criarProposicao`, {
         state: {
-            proposicaoId: proposicaoId,
-            isRespostaContraria: isRespostaContraria,
+            proposicaoId,
+            respostaFavoravel,
         },
     });
 };

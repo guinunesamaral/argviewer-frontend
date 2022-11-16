@@ -11,20 +11,28 @@ import Modal from "react-bootstrap/Modal";
 import Alert from "react-bootstrap/Alert";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { goToPrincipal } from "../../shared/navigate";
+import { goToPrincipal } from "../../shared/navigations";
 import { findUsuarioByNickname, updateUsuario } from "../../shared/requests";
 import { useRef } from "react";
 import { login } from "../../store/usuarioSlice";
 import fotoPadrao from "../../img/perfil.jpg";
-import "./AlterarDados.css";
 import Loader from "../Loader/Loader";
+import { arePasswordsEqual, validarSenha } from "../../shared/validations";
+import {
+    DIFFERENT_PASSWORDS,
+    INVALID_PASSWORD,
+} from "../../shared/errorMessages";
+import { concatMessages } from "../../shared/functions";
+import "./AlterarDados.css";
 
 function AlterarDados(props) {
     const usuario = useSelector((state) => state.usuario);
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const imageInputRef = useRef();
+
     const [loading, setLoading] = useState(false);
+    const loadingMessageRef = useRef("");
 
     const [foto, setFoto] = useState(usuario.data.foto);
     const [nome, setNome] = useState(usuario.data.nome);
@@ -55,18 +63,20 @@ function AlterarDados(props) {
 
     const validarDados = () => {
         let valid = true;
+        let message = "";
 
-        if (senha.length < 6 || senha2.length < 6) {
+        if (!validarSenha(senha) || !validarSenha(senha2)) {
             valid = false;
-            setShowAlertSuccess(false);
-            setFailureMessage("As senhas devem possuir ao menos 6 caracteres!");
+            message = INVALID_PASSWORD;
         }
-        if (senha !== senha2) {
+        if (!arePasswordsEqual(senha, senha2)) {
             valid = false;
-            setShowAlertSuccess(false);
-            setFailureMessage(`${failureMessage}\nAs senhas devem coincidir!`);
+            message = concatMessages(message, DIFFERENT_PASSWORDS);
         }
-
+        if (!valid) {
+            setShowAlertSuccess(false);
+            setFailureMessage(message);
+        }
         return valid;
     };
 
@@ -79,34 +89,31 @@ function AlterarDados(props) {
             foto,
             isAnonimo,
         });
-        return res.status;
+        return res;
     };
 
     const handleCloseAndShowAlert = async () => {
         setShow(false);
         setShowAlertSuccess(undefined);
 
-        const valid = validarDados();
-        if (valid) {
+        if (validarDados()) {
+            loadingMessageRef.current = "Atualizando seus dados";
             setLoading(true);
-            const status = await handleUpdate();
-            if (status !== 200) {
-                setFailureMessage("Houve um problema ao atualizar seus dados!");
-            } else {
-                setShowAlertSuccess(status === 200);
-                const res = await findUsuarioByNickname(usuario.data.nickname);
-                if (res.status === 200) {
-                    dispatch(login(res.data[0]));
-                }
-                setLoading(false);
-            }
+            await handleUpdate()
+                .then(async () => {
+                    setShowAlertSuccess(true);
+                    loadingMessageRef.current = "Buscando suas informações";
+                    return await findUsuarioByNickname(usuario.data.nickname);
+                })
+                .then((res) => dispatch(login(res.data)));
+            setLoading(false);
         }
     };
 
     return (
-        <Col style={{ height: "100%" }}>
+        <Col className="alterarDados">
             {loading ? (
-                <Loader />
+                <Loader message={loadingMessageRef.current} />
             ) : (
                 <>
                     <Card className="alterarDados__wrapper">

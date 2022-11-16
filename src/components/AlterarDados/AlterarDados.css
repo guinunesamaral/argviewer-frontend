@@ -1,8 +1,13 @@
+.alterarDados {
+    padding: 20px 0;
+}
+
 .alterarDados__wrapper {
-    align-items: center;
-    width: 450px;
     text-align: center;
-    margin: 2% auto;
+    align-items: center;
+    height: 100%;
+    width: 420px;
+    margin: auto;
     border-radius: 15px;
 }
 
@@ -18,5 +23,5 @@
 .confirmarAlteracoes {
     display: flex;
     margin: auto;
-    margin: 10px auto;
+    margin: 10px auto 20px auto;
 }

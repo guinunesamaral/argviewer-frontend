@@ -5,79 +5,229 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate, useLocation } from "react-router-dom";
-import { goToPrincipal } from "../../shared/navigate";
-import { criarProposicao, criarResposta } from "../../shared/requests";
-import Proposicao from "../Proposicao/Proposicao";
-import { useState } from "react";
+import { goToPrincipal } from "../../shared/navigations";
+import {
+    checkForProfanity,
+    checkSimilarity,
+    criarProposicao,
+    criarResposta,
+} from "../../shared/requests";
+import { useRef, useState } from "react";
 import { useSelector } from "react-redux";
+import Loader from "../Loader/Loader";
+import { Alert, Modal } from "react-bootstrap";
+import {
+    validarFonteProposicao,
+    validarTextoProposicao,
+} from "../../shared/validations";
+import {
+    INVALID_PROPOSICAO_FONTE,
+    INVALID_PROPOSICAO_TEXT,
+    SENTENCE_PROFANITY,
+    SENTENCE_TOO_SIMILAR,
+} from "../../shared/errorMessages";
+import { concatMessages, formatText } from "../../shared/functions";
 import "./CriarProposicao.css";
 
 export default function CriarProposicao() {
-    const [texto, setTexto] = useState("");
-    const [fonte, setFonte] = useState("");
     const navigate = useNavigate();
     const location = useLocation();
     const usuario = useSelector((state) => state.usuario);
 
-    const { proposicaoId } = { ...location.state };
+    const [loading, setLoading] = useState(false);
+    const loadingMessageRef = useRef("");
 
-    const handleCriarProposicao = () => {
-        criarProposicao(new Proposicao(texto, fonte, usuario.id));
-        criarResposta(proposicaoId, new Proposicao(texto, fonte, usuario.id));
+    const [texto, setTexto] = useState("");
+    const [fonte, setFonte] = useState("");
+
+    const { proposicaoId, respostaFavoravel } = { ...location.state };
+    const proposicoes = useSelector((state) => state.proposicoes.data);
+    const proposicaoOuResposta = proposicaoId ? "resposta" : "proposição";
+    const usuarioId = usuario.data.id;
+
+    const [failureMessage, setFailureMessage] = useState("");
+    const [show, setShow] = useState(false);
+    const [showAlertSuccess, setShowAlertSuccess] = useState(undefined);
+    const handleClose = () => setShow(false);
+    const handleShow = () => setShow(true);
+
+    const isProfanity = async () => {
+        const res = await checkForProfanity(texto).then((res) => res.data);
+        return res > 0.1;
+    };
+
+    const isTooSimilar = async () => {
+        const respostas = proposicoes
+            .find((p) => p.id === proposicaoId)
+            .respostas.map((r) => r.texto);
+
+        const res = await checkSimilarity(texto, respostas).then(
+            (res) => res.data
+        );
+        return res.some((s) => s > 0.8);
+    };
+
+    const validarDados = async () => {
+        let valid = true;
+        let message = "";
+
+        if (!validarTextoProposicao(texto)) {
+            valid = false;
+            message = INVALID_PROPOSICAO_TEXT;
+        }
+        if (!validarFonteProposicao(fonte)) {
+            valid = false;
+            message = concatMessages(message, INVALID_PROPOSICAO_FONTE);
+        }
+        if (!valid) {
+            setShowAlertSuccess(false);
+            setFailureMessage(message);
+        }
+        if (await isProfanity()) {
+            valid = false;
+            message = concatMessages(message, SENTENCE_PROFANITY);
+        }
+        if (await isTooSimilar()) {
+            valid = false;
+            message = concatMessages(message, SENTENCE_TOO_SIMILAR);
+        }
+        return valid;
+    };
+
+    const handleCriarProposicao = async () => {
+        if (proposicaoId) {
+            await criarResposta(proposicaoId, {
+                texto,
+                fonte,
+                usuarioId,
+                respostaFavoravel,
+            });
+        } else {
+            await criarProposicao({ texto, fonte, usuarioId });
+        }
+    };
+
+    const handleCloseAndShowAlert = async () => {
+        setShow(false);
+        setShowAlertSuccess(undefined);
+
+        loadingMessageRef.current = "validando sua proposição";
+        setLoading(true);
+
+        if (await validarDados()) {
+            loadingMessageRef.current = "criando sua proposição";
+            await handleCriarProposicao();
+            setShowAlertSuccess(true);
+        }
+        setLoading(false);
     };
 
     return (
         <Col className="criarProposicao">
-            <Card className="criarProposicao__wrapper">
-                <Card.Body style={{ width: "380px" }}>
-                    <Row>
-                        <FontAwesomeIcon
-                            onClick={goToPrincipal.bind(this, navigate)}
-                            className="c-pointer"
-                            color="black"
-                            icon="fa-solid fa-arrow-left"
-                            size="lg"
-                        />
-                    </Row>
-                    <Card.Title
-                        style={{ textAlign: "center", marginBottom: "25px" }}
-                    >
-                        {proposicaoId
-                            ? "Adicionar resposta"
-                            : "Criar Proposição"}
-                    </Card.Title>
-                    <Form>
-                        <Form.Group className="mb-3" controlId="formTexto">
-                            <Form.Control
-                                as="textarea"
-                                rows={3}
-                                placeholder="Texto"
-                                value={texto}
-                                onChange={(e) => setTexto(e.target.value)}
-                            />
-                        </Form.Group>
+            {loading ? (
+                <Loader message={loadingMessageRef.current} />
+            ) : (
+                <>
+                    <Card className="criarProposicao__wrapper">
+                        <Card.Body style={{ width: "380px" }}>
+                            <Row>
+                                <FontAwesomeIcon
+                                    onClick={goToPrincipal.bind(this, navigate)}
+                                    className="c-pointer"
+                                    color="black"
+                                    icon="fa-solid fa-arrow-left"
+                                    size="lg"
+                                />
+                            </Row>
+                            <Card.Title
+                                style={{
+                                    textAlign: "center",
+                                    marginBottom: "25px",
+                                }}
+                            >
+                                {proposicaoId
+                                    ? "Adicionar resposta"
+                                    : "Criar Proposição"}
+                            </Card.Title>
+                            <Form>
+                                <Form.Group
+                                    className="mb-3"
+                                    controlId="formTexto"
+                                >
+                                    <Form.Control
+                                        as="textarea"
+                                        rows={3}
+                                        placeholder="Texto"
+                                        value={texto}
+                                        onChange={(e) =>
+                                            setTexto(e.target.value)
+                                        }
+                                    />
+                                </Form.Group>
 
-                        <Form.Group className="mb-3" controlId="formTexto">
-                            <Form.Control
-                                placeholder="Fonte"
-                                value={fonte}
-                                onChange={(e) => setFonte(e.target.value)}
-                            />
-                        </Form.Group>
+                                <Form.Group
+                                    className="mb-3"
+                                    controlId="formTexto"
+                                >
+                                    <Form.Control
+                                        placeholder="Fonte"
+                                        value={fonte}
+                                        onChange={(e) =>
+                                            setFonte(e.target.value)
+                                        }
+                                    />
+                                </Form.Group>
 
-                        <Button
-                            style={{
-                                display: "flex",
-                                margin: "15px auto",
-                            }}
-                            variant="primary"
-                            onClick={handleCriarProposicao}
+                                <Button
+                                    style={{
+                                        display: "flex",
+                                        margin: "15px auto 0 auto",
+                                    }}
+                                    variant="primary"
+                                    onClick={handleShow}
+                                >
+                                    Postar
+                                </Button>
+                            </Form>
+                        </Card.Body>
+                        <Alert
+                            show={showAlertSuccess === true}
+                            variant="success"
                         >
-                            Postar
-                        </Button>
-                    </Form>
-                </Card.Body>
-            </Card>
+                            {formatText(proposicaoOuResposta)} criada com
+                            sucesso!
+                        </Alert>
+                        <Alert
+                            show={showAlertSuccess === false}
+                            variant="danger"
+                        >
+                            {failureMessage}
+                        </Alert>
+                    </Card>
+                    <Modal show={show} onHide={handleClose}>
+                        <Modal.Header closeButton>
+                            <Modal.Title>
+                                Confirmar criação da {proposicaoOuResposta}
+                            </Modal.Title>
+                        </Modal.Header>
+                        <Modal.Body>
+                            Você está criando a {proposicaoOuResposta}. Clique
+                            em Confirmar para prosseguir
+                        </Modal.Body>
+                        <Modal.Footer>
+                            <Button variant="secondary" onClick={handleClose}>
+                                Fechar
+                            </Button>
+                            <Button
+                                variant="primary"
+                                onClick={handleCloseAndShowAlert}
+                            >
+                                Confirmar
+                            </Button>
+                        </Modal.Footer>
+                    </Modal>
+                </>
+            )}
         </Col>
     );
 }

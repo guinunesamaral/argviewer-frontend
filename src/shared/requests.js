@@ -1,4 +1,4 @@
-import { argviewer } from "../plugins/axios";
+import { argviewer, sentenceAnalyzer } from "../plugins/axios";
 
 export const cadastrarUsuario = async (usuario) => {
     return await argviewer.post("usuarios", {
@@ -41,18 +41,24 @@ export const findProposicoesByUsuarioId = async (usuarioId) => {
 };
 
 export const criarProposicao = async (proposicao) => {
-    return await argviewer.post("proposicoes", {
-        texto: proposicao.texto,
-        fonte: proposicao.fonte,
-        usuarioId: proposicao.usuarioId,
-    });
+    return await argviewer.post("proposicoes", proposicao);
 };
 
 export const criarResposta = async (proposicaoId, resposta) => {
-    return await argviewer.post(`proposicoes/${proposicaoId}/resposta`, {
-        texto: resposta.texto,
-        fonte: resposta.fonte,
-        usuarioId: resposta.usuarioId,
+    return await argviewer.post(
+        `proposicoes/${proposicaoId}/resposta`,
+        resposta
+    );
+};
+
+export const checkForProfanity = async (sentence) => {
+    return await sentenceAnalyzer.post("profanity", { sentence });
+};
+
+export const checkSimilarity = async (sentence, sentences_to_compare) => {
+    return await sentenceAnalyzer.post("similarity", {
+        sentence,
+        sentences_to_compare,
     });
 };
 

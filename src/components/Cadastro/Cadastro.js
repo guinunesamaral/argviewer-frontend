@@ -6,13 +6,33 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
-import { goToPrincipal } from "../../shared/navigate";
-import { Figure, Modal } from "react-bootstrap";
+import { goToPrincipal } from "../../shared/navigations";
+import { Alert, Figure, Modal } from "react-bootstrap";
 import fotoPadrao from "../../img/perfil.jpg";
 import Loader from "../Loader/Loader";
-import { cadastrarUsuario, login } from "../../shared/requests";
+import { login as loginAction } from "../../store/usuarioSlice";
+import {
+    cadastrarUsuario,
+    findUsuarioByNickname,
+    login,
+} from "../../shared/requests";
 import { useDispatch } from "react-redux";
+import {
+    DIFFERENT_PASSWORDS,
+    INVALID_EMAIL,
+    INVALID_NAME,
+    INVALID_NICKNAME,
+    INVALID_PASSWORD,
+} from "../../shared/errorMessages";
+import {
+    arePasswordsEqual,
+    validarEmail,
+    validarNickname,
+    validarNome,
+    validarSenha,
+} from "../../shared/validations";
 import "./Cadastro.css";
+import { concatMessages } from "../../shared/functions";
 
 function Cadastro(props) {
     const navigate = useNavigate();
@@ -22,9 +42,8 @@ function Cadastro(props) {
     const [nome, setNome] = useState("");
     const [nickname, setNickname] = useState("");
     const [email, setEmail] = useState("");
-    const [senha, setSenha] = useState("");
-    const [senha2, setSenha2] = useState("");
-    const [isDataValid, setIsDataValid] = useState(false);
+    const [senha, setSenha] = useState("123456");
+    const [senha2, setSenha2] = useState("123456");
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -49,68 +68,70 @@ function Cadastro(props) {
 
     const validarDados = () => {
         let valid = true;
+        let message = "";
 
-        if (senha.length < 6 || senha2.length < 6) {
+        if (!validarNome(nome)) {
             valid = false;
-            setShowAlertSuccess(false);
-            setFailureMessage("As senhas devem possuir ao menos 6 caracteres!");
+            message = INVALID_NAME;
         }
-        if (senha !== senha2) {
+        if (!validarNickname(nickname)) {
             valid = false;
-            setShowAlertSuccess(false);
-            setFailureMessage(`${failureMessage}\nAs senhas devem coincidir!`);
+            message = concatMessages(message, INVALID_NICKNAME);
         }
-
+        if (!validarEmail(email)) {
+            valid = false;
+            message = concatMessages(message, INVALID_EMAIL);
+        }
+        if (!validarSenha(senha) || !validarSenha(senha2)) {
+            valid = false;
+            message = concatMessages(message, INVALID_PASSWORD);
+        }
+        if (!arePasswordsEqual(senha, senha2)) {
+            valid = false;
+            message = concatMessages(message, DIFFERENT_PASSWORDS);
+        }
+        if (!valid) {
+            setShowAlertSuccess(false);
+            setFailureMessage(message);
+        }
         return valid;
     };
 
     const handleCadastro = async () => {
-        const res = await cadastrarUsuario({
+        return await cadastrarUsuario({
             nome,
             nickname,
             email,
             senha,
             foto,
         });
-        if (res.status === 200) {
-            setIsDataValid(true);
-        } else {
-            setIsDataValid(false);
-        }
+    };
+
+    const handleLogin = async (nickname, senha) => {
+        return await login(nickname, senha);
     };
 
     const handleCloseAndShowAlert = async () => {
         setShow(false);
         setShowAlertSuccess(undefined);
 
-        const valid = validarDados();
-        if (valid) {
+        if (validarDados()) {
             setLoading(true);
-            const status = await handleCadastro();
-            if (status !== 200) {
-                setFailureMessage("Houve um problema ao atualizar seus dados!");
-            } else {
-                setShowAlertSuccess(status === 200);
-                const res = await login(nickname);
-                if (res.status === 200) {
-                    dispatch(login(res.data[0]));
-                }
-                setLoading(false);
-            }
+            await handleCadastro()
+                .then(async () => {
+                    setShowAlertSuccess(true);
+                    return await handleLogin(nickname, senha);
+                })
+                .then(async () => await findUsuarioByNickname(nickname))
+                .then((res) => dispatch(loginAction(res.data)));
+            setLoading(false);
         }
     };
 
-    useEffect(() => {
-        if (isDataValid) {
-            goToPrincipal(navigate);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isDataValid]);
-
     return (
-        <Col style={{ border: "1px solid red" }}>
+        <Col>
             {loading ? (
-                <Loader />
+                <Loader message="Cadastrando." />
             ) : (
                 <>
                     <Card className="cadastrar__wrapper">
@@ -133,6 +154,10 @@ function Cadastro(props) {
                             <Form>
                                 <Figure>
                                     <Figure.Image
+                                        style={{
+                                            minHeight: "100px",
+                                            minWidth: "100px",
+                                        }}
                                         className="border-rounded"
                                         width={100}
                                         height={100}
@@ -233,11 +258,23 @@ function Cadastro(props) {
                                         marginBottom: "15px",
                                     }}
                                     variant="primary"
-                                    onClick={handleCadastro}
+                                    onClick={handleShow}
                                 >
                                     Efetuar Cadastro
                                 </Button>
                             </Form>
+                            <Alert
+                                show={showAlertSuccess === true}
+                                variant="success"
+                            >
+                                Cadastrado com sucesso!
+                            </Alert>
+                            <Alert
+                                show={showAlertSuccess === false}
+                                variant="danger"
+                            >
+                                {failureMessage}
+                            </Alert>
                         </Card.Body>
                     </Card>
                     <Modal show={show} onHide={handleClose}>

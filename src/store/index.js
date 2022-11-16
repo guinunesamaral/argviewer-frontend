@@ -12,17 +12,12 @@ import {
 } from "redux-persist";
 import usuarioReducer from "./usuarioSlice";
 import proposicoesReducer from "./proposicoesSlice";
-import { usuarioApi } from "./usuarioApi";
 
 const persistConfig = {
     key: "root",
     storage,
 };
 const persistedUsuarioReducer = persistReducer(persistConfig, usuarioReducer);
-// const persistedUsuarioReducer = persistReducer(
-//     persistConfig,
-//     usuarioApi.reducer
-// );
 
 export const store = configureStore({
     reducer: {
@@ -41,6 +36,6 @@ export const store = configureStore({
                     REGISTER,
                 ],
             },
-        }).concat(usuarioApi.middleware),
+        }),
 });
 export const persistor = persistStore(store);

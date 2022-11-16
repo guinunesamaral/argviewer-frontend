@@ -1,12 +1,13 @@
 import Card from "react-bootstrap/Card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Figure } from "react-bootstrap";
-import { goToPerfil, goToVisualizarProposicao } from "../../shared/navigate";
+import { goToPerfil, goToVisualizarProposicao } from "../../shared/navigations";
+import { formatText } from "../../shared/functions";
 import fotoPadrao from "../../img/perfil.jpg";
 import "./Proposicao.css";
 
 function Proposicao(props) {
-    const { usuario, proposicao, formatText, navigate } = { ...props };
+    const { usuario, proposicao, navigate } = { ...props };
 
     return (
         <Card className="proposicao">

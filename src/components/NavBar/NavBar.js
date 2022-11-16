@@ -1,22 +1,25 @@
 import { Figure, Form } from "react-bootstrap";
-import { useSelector } from "react-redux";
-import { persistor } from "../../store/index";
+import { useDispatch, useSelector } from "react-redux";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
 import {
     goToAlterarDados,
     goToLogin,
     goToPrincipal,
-} from "../../shared/navigate";
+} from "../../shared/navigations";
 import fotoPadrao from "../../img/perfil.jpg";
+import { logout } from "../../store/usuarioSlice";
+import { removeAllProposicoes } from "../../store/proposicoesSlice";
 import "./NavBar.css";
 
 function NavBar() {
     const navigate = useNavigate();
+    const dispatch = useDispatch();
     const usuario = useSelector((state) => state.usuario);
 
-    const logout = async () => {
-        await persistor.purge();
+    const handleLogout = async () => {
+        dispatch(logout());
+        dispatch(removeAllProposicoes());
         goToLogin(navigate);
     };
 
@@ -69,7 +72,7 @@ function NavBar() {
                         icon="fa-solid fa-door-closed"
                         color="black"
                         size="xl"
-                        onClick={logout}
+                        onClick={handleLogout}
                     />
                 )}
             </div>

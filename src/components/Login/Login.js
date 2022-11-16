@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import Button from "react-bootstrap/Button";
@@ -7,33 +7,37 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { login as loginAction } from "../../store/usuarioSlice";
 import { findUsuarioByNickname, login } from "../../shared/requests";
-import "./Login.css";
 import Loader from "../Loader/Loader";
+import "./Login.css";
 
 function Login() {
     const [loading, setLoading] = useState(false);
+    const loadingMessageRef = useRef("");
+
     const [nickname, setNickname] = useState("gn19");
     const [senha, setSenha] = useState("123456");
     const dispatch = useDispatch();
 
     const handleLogin = async () => {
+        loadingMessageRef.current = "Realizando login";
         setLoading(true);
-        let res = await login(nickname, senha);
-        if (res.status === 200) {
-            res = await findUsuarioByNickname(nickname);
-            if (res.status === 200) {
-                dispatch(loginAction(res.data[0]));
-            }
-            setLoading(false);
-        } else {
-            setLoading(false);
-        }
+
+        await login(nickname, senha)
+            .then(async () => {
+                loadingMessageRef.current = "Buscando suas informações";
+                return await findUsuarioByNickname(nickname);
+            })
+            .then((res) => {
+                loadingMessageRef.current = "Entrando na plataforma";
+                dispatch(loginAction(res.data));
+            });
+        setLoading(false);
     };
 
     return (
         <Col className="login">
-            {loading ? (
-                <Loader />
+            {loading.isLoading ? (
+                <Loader message={loadingMessageRef.current} />
             ) : (
                 <Card className="login__wrapper">
                     <Card.Body>

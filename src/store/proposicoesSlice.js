@@ -33,6 +33,11 @@ export const proposicoesSlice = createSlice({
         update: (state, action) => {
             return [...state];
         },
+        removeAllProposicoes: () => {
+            return {
+                data: [],
+            };
+        },
     },
     extraReducers: (builder) => {
         builder.addCase(PURGE, (state) => {
@@ -41,7 +46,7 @@ export const proposicoesSlice = createSlice({
     },
 });
 
-export const { addAll, addOne, addRespostas, update } =
+export const { addAll, addOne, addRespostas, update, removeAllProposicoes } =
     proposicoesSlice.actions;
 
 export default proposicoesSlice.reducer;
