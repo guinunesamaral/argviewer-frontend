@@ -12,8 +12,8 @@ export const cadastrarUsuario = async (usuario) => {
 
 export const login = async (nickname, senha) => {
     return await argviewer.post("usuarios/login", {
-        nickname: nickname,
-        senha: senha,
+        nickname,
+        senha,
     });
 };
 

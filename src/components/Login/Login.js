@@ -36,7 +36,7 @@ function Login() {
 
     return (
         <Col className="login">
-            {loading.isLoading ? (
+            {loading ? (
                 <Loader message={loadingMessageRef.current} />
             ) : (
                 <Card className="login__wrapper">

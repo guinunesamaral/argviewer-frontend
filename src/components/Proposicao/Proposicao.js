@@ -11,7 +11,7 @@ function Proposicao(props) {
 
     return (
         <Card className="proposicao">
-            <Card.Body className="proposicao__body">
+            <Card.Body className="proposicao__body" style={{ marginRight: 0 }}>
                 <div className="d-flex justify-between">
                     <div className="d-flex align-center">
                         <Figure.Image

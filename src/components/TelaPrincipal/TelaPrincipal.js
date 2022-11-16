@@ -5,6 +5,7 @@ import VisualizarProposicao from "../VisualizarProposicao/VisualizarProposicao";
 import { findProposicoesByUsuarioId } from "../../shared/requests";
 import Loader from "../Loader/Loader";
 import BigPlusProposicao from "../Plus/BigPlusProposicao";
+import "./TelaPrincipal.css";
 
 function TelaPrincipal() {
     const dispatch = useDispatch();
@@ -25,7 +26,7 @@ function TelaPrincipal() {
     }, []);
 
     return (
-        <div style={{ height: "100%" }}>
+        <div className="telaPrincipal">
             {loading ? (
                 <Loader message="Buscando proposições" />
             ) : proposicoes.data.length ? (
