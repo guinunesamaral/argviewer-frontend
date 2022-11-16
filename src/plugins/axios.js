@@ -1,8 +1,5 @@
 import axios from "axios";
-import {
-    ARGVIEWER_API,
-    SENTENCE_ANALYZER_LOCALHOST_API_,
-} from "../shared/constants";
+import { ARGVIEWER_API, SENTENCE_ANALYZER_API } from "../shared/constants";
 
 export const argviewer = axios.create({
     baseURL: ARGVIEWER_API,
@@ -16,7 +13,7 @@ export const argviewer = axios.create({
 });
 
 export const sentenceAnalyzer = axios.create({
-    baseURL: SENTENCE_ANALYZER_LOCALHOST_API_,
+    baseURL: SENTENCE_ANALYZER_API,
     timeout: 50000,
     headers: {
         "Content-Type": "application/json",
