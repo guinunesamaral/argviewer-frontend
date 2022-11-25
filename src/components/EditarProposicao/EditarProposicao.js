@@ -4,44 +4,36 @@ import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useNavigate, useLocation } from "react-router-dom";
+import Modal from "react-bootstrap/Modal";
+import React, { useRef, useState } from "react";
 import { goToPrincipal } from "../../shared/navigations";
+import { useLocation, useNavigate } from "react-router-dom";
 import {
     checkForProfanity,
     checkSimilarity,
-    criarProposicao,
-    criarResposta,
+    editarProposicao,
+    findRespostas,
 } from "../../shared/requests";
-import { useRef, useState } from "react";
-import { useSelector } from "react-redux";
-import Loader from "../Loader/Loader";
-import { Alert, Modal } from "react-bootstrap";
-import { isEmpty, isSourceValid, isTextValid } from "../../shared/validations";
+import { isTextValid } from "../../shared/validations";
 import {
-    INVALID_PROPOSICAO_FONTE,
     INVALID_PROPOSICAO_TEXT,
     SENTENCE_PROFANITY,
     SENTENCE_TOO_SIMILAR,
 } from "../../shared/errorMessages";
-import { concatMessages, formatText } from "../../shared/functions";
-import "./CriarProposicao.css";
+import { concatMessages } from "../../shared/functions";
+import Loader from "../Loader/Loader";
+import { Alert } from "react-bootstrap";
+import "./EditarProposicao.css";
 
-export default function CriarProposicao() {
+export default function EditarProposicao() {
     const navigate = useNavigate();
     const location = useLocation();
-    const usuario = useSelector((state) => state.usuario);
 
     const [loading, setLoading] = useState(false);
     const loadingMessageRef = useRef("");
 
-    const [texto, setTexto] = useState("");
-    const [fonte, setFonte] = useState("");
-
-    const { proposicaoReferencia, respostaFavoravel } = { ...location.state };
-    const proposicaoOuResposta = proposicaoReferencia
-        ? "resposta"
-        : "proposição";
-    const usuarioId = usuario.data.id;
+    const { proposicao } = { ...location.state };
+    const [texto, setTexto] = useState(proposicao.texto);
 
     const [failureMessage, setFailureMessage] = useState("");
     const [show, setShow] = useState(false);
@@ -55,11 +47,16 @@ export default function CriarProposicao() {
     };
 
     const isTooSimilar = async () => {
-        const respostas = proposicaoReferencia.respostas
-            ? proposicaoReferencia.respostas.map((r) => r.texto)
+        let respostas = [];
+        if (!proposicao.proposicaoInicial) {
+            const res = await findRespostas(proposicao.id);
+            respostas = res.data && proposicao.respostas.map((r) => r.texto);
+        }
+        respostas = proposicao.respostas
+            ? proposicao.respostas.map((r) => r.texto)
             : [];
         const res = await checkSimilarity(texto, [
-            proposicaoReferencia.texto,
+            proposicao.texto,
             ...respostas,
         ]);
         return res.status === 200 ? res.data.some((s) => s > 0.8) : false;
@@ -73,12 +70,6 @@ export default function CriarProposicao() {
             valid = false;
             message = INVALID_PROPOSICAO_TEXT;
         }
-        if (!isEmpty(fonte)) {
-            if (!isSourceValid(fonte)) {
-                valid = false;
-                message = concatMessages(message, INVALID_PROPOSICAO_FONTE);
-            }
-        }
         if (!valid) {
             setShowAlertSuccess(false);
             setFailureMessage(message);
@@ -87,26 +78,15 @@ export default function CriarProposicao() {
             valid = false;
             message = concatMessages(message, SENTENCE_PROFANITY);
         }
-        if (proposicaoReferencia) {
-            if (await isTooSimilar()) {
-                valid = false;
-                message = concatMessages(message, SENTENCE_TOO_SIMILAR);
-            }
+        if (await isTooSimilar()) {
+            valid = false;
+            message = concatMessages(message, SENTENCE_TOO_SIMILAR);
         }
         return valid;
     };
 
-    const handleCriarProposicao = async () => {
-        if (proposicaoReferencia) {
-            await criarResposta(proposicaoReferencia.id, {
-                texto,
-                fonte,
-                usuarioId,
-                respostaFavoravel,
-            });
-        } else {
-            await criarProposicao({ texto, fonte, usuarioId });
-        }
+    const handleEditarProposicao = async () => {
+        await editarProposicao(proposicao.id, texto, proposicao.fonte);
     };
 
     const handleCloseAndShowAlert = async () => {
@@ -117,28 +97,26 @@ export default function CriarProposicao() {
         setLoading(true);
 
         if (await validarDados()) {
-            loadingMessageRef.current = "criando sua proposição";
-            await handleCriarProposicao();
+            loadingMessageRef.current = "editando sua proposição";
+            await handleEditarProposicao();
             setShowAlertSuccess(true);
         }
         setLoading(false);
     };
 
     return (
-        <Col className="criarProposicao">
+        <Col className="editarProposicao">
             {loading ? (
                 <Loader message={loadingMessageRef.current} />
             ) : (
                 <>
-                    <Card className="criarProposicao__wrapper">
+                    <Card className="editarProposicao__wrapper">
                         <Card.Body style={{ width: "380px" }}>
                             <Row>
                                 <FontAwesomeIcon
-                                    onClick={goToPrincipal.bind(this, navigate)}
                                     className="c-pointer"
-                                    color="black"
                                     icon="fa-solid fa-arrow-left"
-                                    size="lg"
+                                    onClick={goToPrincipal.bind(this, navigate)}
                                 />
                             </Row>
                             <Card.Title
@@ -147,19 +125,16 @@ export default function CriarProposicao() {
                                     marginBottom: "25px",
                                 }}
                             >
-                                {proposicaoReferencia
-                                    ? "Adicionar resposta"
-                                    : "Criar Proposição"}
+                                Editar Proposição
                             </Card.Title>
                             <Form>
                                 <Form.Group
                                     className="mb-3"
                                     controlId="formTexto"
                                 >
+                                    <Form.Label>Texto da proposição</Form.Label>
                                     <Form.Control
-                                        as="textarea"
-                                        rows={3}
-                                        placeholder="Texto"
+                                        placeholder="Insira o texto"
                                         value={texto}
                                         onChange={(e) =>
                                             setTexto(e.target.value)
@@ -167,28 +142,8 @@ export default function CriarProposicao() {
                                     />
                                 </Form.Group>
 
-                                <Form.Group
-                                    className="mb-3"
-                                    controlId="formTexto"
-                                >
-                                    <Form.Control
-                                        placeholder="Fonte"
-                                        value={fonte}
-                                        onChange={(e) =>
-                                            setFonte(e.target.value)
-                                        }
-                                    />
-                                </Form.Group>
-
-                                <Button
-                                    style={{
-                                        display: "flex",
-                                        margin: "15px auto 0 auto",
-                                    }}
-                                    variant="primary"
-                                    onClick={handleShow}
-                                >
-                                    Postar
+                                <Button variant="primary" onClick={handleShow}>
+                                    Alterar
                                 </Button>
                             </Form>
                         </Card.Body>
@@ -196,8 +151,7 @@ export default function CriarProposicao() {
                             show={showAlertSuccess === true}
                             variant="success"
                         >
-                            {formatText(proposicaoOuResposta)} criada com
-                            sucesso!
+                            Proposição editada com sucesso!
                         </Alert>
                         <Alert
                             show={showAlertSuccess === false}
@@ -208,23 +162,20 @@ export default function CriarProposicao() {
                     </Card>
                     <Modal show={show} onHide={handleClose}>
                         <Modal.Header closeButton>
-                            <Modal.Title>
-                                Confirmar criação da {proposicaoOuResposta}
-                            </Modal.Title>
+                            <Modal.Title>Aviso</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            Você está criando a {proposicaoOuResposta}. Clique
-                            em Confirmar para prosseguir
+                            Tem certeza que deseja alterar o seu texto?
                         </Modal.Body>
                         <Modal.Footer>
                             <Button variant="secondary" onClick={handleClose}>
-                                Fechar
+                                Cancelar
                             </Button>
                             <Button
                                 variant="primary"
                                 onClick={handleCloseAndShowAlert}
                             >
-                                Confirmar
+                                Alterar
                             </Button>
                         </Modal.Footer>
                     </Modal>

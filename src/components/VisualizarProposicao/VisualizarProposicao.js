@@ -3,24 +3,21 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate, useLocation } from "react-router-dom";
 import {
     goToCriarResposta,
+    goToEditarProposicao,
     goToVisualizarProposicao,
 } from "../../shared/navigations";
-import { deleteProposicao } from "../../shared/requests";
 import { formatText } from "../../shared/functions";
 import "./VisualizarProposicao.css";
+import { useSelector } from "react-redux";
 
 function VisualizarProposicao(props) {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const { proposicao, usuario, fetchProposicoes } = Object.keys(props).length
+    const usuarioPlataforma = useSelector((state) => state.usuario.data);
+    const { proposicao, usuarioReferencia } = Object.keys(props).length
         ? { ...props }
         : { ...location.state };
-
-    const handleDelete = async (proposicaoId) => {
-        await deleteProposicao(proposicaoId);
-        await fetchProposicoes();
-    };
 
     return (
         <div className="visualizarProposicao">
@@ -32,7 +29,7 @@ function VisualizarProposicao(props) {
                             this,
                             navigate,
                             proposicao,
-                            usuario
+                            usuarioReferencia
                         )}
                     >
                         {formatText(proposicao.texto)}
@@ -56,19 +53,19 @@ function VisualizarProposicao(props) {
                             color="black"
                             size="lg"
                         />
-                        <FontAwesomeIcon
-                            className="c-pointer mr-15"
-                            icon="fa-solid fa-edit"
-                            color="black"
-                            size="lg"
-                        />
-                        <FontAwesomeIcon
-                            className="c-pointer"
-                            icon="fa-solid fa-trash"
-                            color="black"
-                            size="lg"
-                            onClick={handleDelete.bind(this, proposicao.id)}
-                        />
+                        {usuarioPlataforma.id === usuarioReferencia.id && (
+                            <FontAwesomeIcon
+                                className="c-pointer mr-15"
+                                icon="fa-solid fa-edit"
+                                color="black"
+                                size="lg"
+                                onClick={goToEditarProposicao.bind(
+                                    this,
+                                    navigate,
+                                    proposicao
+                                )}
+                            />
+                        )}
                     </div>
                 </div>
                 <div className="d-flex">
@@ -82,7 +79,7 @@ function VisualizarProposicao(props) {
                                 onClick={goToCriarResposta.bind(
                                     this,
                                     navigate,
-                                    proposicao.id,
+                                    proposicao,
                                     true
                                 )}
                             />
@@ -93,8 +90,8 @@ function VisualizarProposicao(props) {
                                 .map((resposta) => (
                                     <Proposicao
                                         key={resposta.id}
-                                        usuario={resposta.usuario}
-                                        proposicao={resposta}
+                                        usuarioReferencia={resposta.usuario}
+                                        proposicaoId={resposta.id}
                                         navigate={navigate}
                                     />
                                 ))}
@@ -109,7 +106,7 @@ function VisualizarProposicao(props) {
                                 onClick={goToCriarResposta.bind(
                                     this,
                                     navigate,
-                                    proposicao.id,
+                                    proposicao,
                                     false
                                 )}
                             />
@@ -120,8 +117,8 @@ function VisualizarProposicao(props) {
                                 .map((resposta) => (
                                     <Proposicao
                                         key={resposta.id}
-                                        usuario={resposta.usuario}
-                                        proposicao={resposta}
+                                        usuarioReferencia={resposta.usuario}
+                                        proposicaoId={resposta.id}
                                         navigate={navigate}
                                     />
                                 ))}

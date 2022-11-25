@@ -21,6 +21,7 @@ import {
     faDoorClosed,
 } from "@fortawesome/free-solid-svg-icons";
 import "./App.css";
+import EditarProposicao from "./components/EditarProposicao/EditarProposicao";
 
 library.add(
     fas,
@@ -75,6 +76,10 @@ function App() {
                 <Route
                     path="/visualizarProposicao"
                     element={<VisualizarProposicao />}
+                />
+                <Route
+                    path="/editarProposicao"
+                    element={<EditarProposicao />}
                 />
                 <Route path="/perfil" element={<Perfil />} />
                 <Route path="/criarProposicao" element={<CriarProposicao />} />

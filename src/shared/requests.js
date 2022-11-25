@@ -36,12 +36,24 @@ export const updateUsuario = async (usuario) => {
     });
 };
 
+export const findProposicaoById = async (id) => {
+    return await argviewer.get(`proposicoes/${id}`);
+};
+
 export const findProposicoesByUsuarioId = async (usuarioId) => {
     return await argviewer.get(`proposicoes?usuarioId=${usuarioId}`);
 };
 
+export const findRespostas = async (proposicaoId) => {
+    return await argviewer.get(`proposicoes/${proposicaoId}/respostas`);
+};
+
 export const criarProposicao = async (proposicao) => {
     return await argviewer.post("proposicoes", proposicao);
+};
+
+export const editarProposicao = async (id, texto, fonte) => {
+    return await argviewer.put("proposicoes", { id, texto, fonte });
 };
 
 export const criarResposta = async (proposicaoId, resposta) => {
@@ -49,6 +61,24 @@ export const criarResposta = async (proposicaoId, resposta) => {
         `proposicoes/${proposicaoId}/resposta`,
         resposta
     );
+};
+
+export const addVote = async (usuarioId, proposicaoId, upvote) => {
+    return await argviewer.post("proposicoes/vote", {
+        usuarioId,
+        proposicaoId,
+        upvote,
+    });
+};
+
+// axios' delete requests must pass their bodies inside the data property
+export const removeVote = async (usuarioId, proposicaoId) => {
+    return await argviewer.delete("proposicoes/vote", {
+        data: {
+            usuarioId,
+            proposicaoId,
+        },
+    });
 };
 
 export const checkForProfanity = async (sentence) => {
@@ -60,8 +90,4 @@ export const checkSimilarity = async (sentence, sentences_to_compare) => {
         sentence,
         sentences_to_compare,
     });
-};
-
-export const deleteProposicao = async (proposicaoId) => {
-    return await argviewer.delete(`proposicoes/${proposicaoId}`);
 };

@@ -26,10 +26,10 @@ import {
 } from "../../shared/errorMessages";
 import {
     arePasswordsEqual,
-    validarEmail,
-    validarNickname,
-    validarNome,
-    validarSenha,
+    isEmailValid,
+    isNicknameValid,
+    isNameValid,
+    isPasswordValid,
 } from "../../shared/validations";
 import "./Cadastro.css";
 import { concatMessages } from "../../shared/functions";
@@ -42,8 +42,8 @@ function Cadastro(props) {
     const [nome, setNome] = useState("");
     const [nickname, setNickname] = useState("");
     const [email, setEmail] = useState("");
-    const [senha, setSenha] = useState("123456");
-    const [senha2, setSenha2] = useState("123456");
+    const [senha, setSenha] = useState("");
+    const [senha2, setSenha2] = useState("");
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {
@@ -70,19 +70,19 @@ function Cadastro(props) {
         let valid = true;
         let message = "";
 
-        if (!validarNome(nome)) {
+        if (!isNameValid(nome)) {
             valid = false;
             message = INVALID_NAME;
         }
-        if (!validarNickname(nickname)) {
+        if (!isNicknameValid(nickname)) {
             valid = false;
             message = concatMessages(message, INVALID_NICKNAME);
         }
-        if (!validarEmail(email)) {
+        if (!isEmailValid(email)) {
             valid = false;
             message = concatMessages(message, INVALID_EMAIL);
         }
-        if (!validarSenha(senha) || !validarSenha(senha2)) {
+        if (!isPasswordValid(senha) || !isPasswordValid(senha2)) {
             valid = false;
             message = concatMessages(message, INVALID_PASSWORD);
         }
@@ -123,15 +123,17 @@ function Cadastro(props) {
                     return await handleLogin(nickname, senha);
                 })
                 .then(async () => await findUsuarioByNickname(nickname))
-                .then((res) => dispatch(loginAction(res.data)));
+                .then((res) => dispatch(loginAction(res.data)))
+                .catch(setLoading(false));
             setLoading(false);
+            goToPrincipal(navigate);
         }
     };
 
     return (
         <Col>
             {loading ? (
-                <Loader message="Cadastrando." />
+                <Loader message="Cadastrando" />
             ) : (
                 <>
                     <Card className="cadastrar__wrapper">

@@ -17,7 +17,7 @@ import { useRef } from "react";
 import { login } from "../../store/usuarioSlice";
 import fotoPadrao from "../../img/perfil.jpg";
 import Loader from "../Loader/Loader";
-import { arePasswordsEqual, validarSenha } from "../../shared/validations";
+import { arePasswordsEqual, isPasswordValid } from "../../shared/validations";
 import {
     DIFFERENT_PASSWORDS,
     INVALID_PASSWORD,
@@ -65,7 +65,7 @@ function AlterarDados(props) {
         let valid = true;
         let message = "";
 
-        if (!validarSenha(senha) || !validarSenha(senha2)) {
+        if (!isPasswordValid(senha) || !isPasswordValid(senha2)) {
             valid = false;
             message = INVALID_PASSWORD;
         }

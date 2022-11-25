@@ -10,11 +10,23 @@ export const goToAlterarDados = (navigate) => {
     navigate("/alterarDados");
 };
 
-export const goToVisualizarProposicao = (navigate, proposicao, usuario) => {
+export const goToVisualizarProposicao = (
+    navigate,
+    proposicao,
+    usuarioReferencia
+) => {
     navigate(`/visualizarProposicao`, {
         state: {
-            proposicao: proposicao,
-            usuario: usuario,
+            proposicao,
+            usuarioReferencia,
+        },
+    });
+};
+
+export const goToEditarProposicao = (navigate, proposicao) => {
+    navigate(`/editarProposicao`, {
+        state: {
+            proposicao,
         },
     });
 };
@@ -25,12 +37,12 @@ export const goToCriarProposicao = (navigate) => {
 
 export const goToCriarResposta = (
     navigate,
-    proposicaoId,
+    proposicaoReferencia,
     respostaFavoravel
 ) => {
     navigate(`/criarProposicao`, {
         state: {
-            proposicaoId,
+            proposicaoReferencia,
             respostaFavoravel,
         },
     });

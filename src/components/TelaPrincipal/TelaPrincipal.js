@@ -9,13 +9,13 @@ import "./TelaPrincipal.css";
 
 function TelaPrincipal() {
     const dispatch = useDispatch();
-    const usuario = useSelector((state) => state.usuario);
+    const usuarioPlataforma = useSelector((state) => state.usuario.data);
     const proposicoes = useSelector((state) => state.proposicoes);
     const [loading, setLoading] = useState(false);
 
     const fetchProposicoes = async () => {
         setLoading(true);
-        const res = await findProposicoesByUsuarioId(usuario.data.id);
+        const res = await findProposicoesByUsuarioId(usuarioPlataforma.id);
         setLoading(false);
         dispatch(addAll(res.data));
     };
@@ -35,7 +35,7 @@ function TelaPrincipal() {
                         <VisualizarProposicao
                             key={item.id}
                             proposicao={item}
-                            usuario={usuario}
+                            usuarioReferencia={usuarioPlataforma}
                             fetchProposicoes={fetchProposicoes}
                         />
                     ))}

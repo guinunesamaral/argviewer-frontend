@@ -30,7 +30,8 @@ function Login() {
             .then((res) => {
                 loadingMessageRef.current = "Entrando na plataforma";
                 dispatch(loginAction(res.data));
-            });
+            })
+            .catch(setLoading(false));
         setLoading(false);
     };
 
