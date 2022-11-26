@@ -5,25 +5,25 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate, useLocation } from "react-router-dom";
-import { goToPrincipal } from "../../shared/navigations";
+import { goToPrincipal } from "utils/navigations";
 import {
     checkForProfanity,
     checkSimilarity,
     criarProposicao,
     criarResposta,
-} from "../../shared/requests";
+} from "utils/requests";
 import { useRef, useState } from "react";
 import { useSelector } from "react-redux";
 import Loader from "../Loader/Loader";
 import { Alert, Modal } from "react-bootstrap";
-import { isEmpty, isSourceValid, isTextValid } from "../../shared/validations";
+import { isEmpty, isSourceValid, isTextValid } from "utils/validations";
 import {
     INVALID_PROPOSICAO_FONTE,
     INVALID_PROPOSICAO_TEXT,
     SENTENCE_PROFANITY,
     SENTENCE_TOO_SIMILAR,
-} from "../../shared/errorMessages";
-import { concatMessages, formatText } from "../../shared/functions";
+} from "utils/errorMessages";
+import { concatMessages, formatText } from "utils/functions";
 import "./CriarProposicao.css";
 
 export default function CriarProposicao() {

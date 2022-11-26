@@ -1,4 +1,4 @@
-import { argviewer, sentenceAnalyzer } from "../plugins/axios";
+import { argviewer, sentenceAnalyzer } from "plugins/axios";
 
 export const cadastrarUsuario = async (usuario) => {
     return await argviewer.post("usuarios", {
@@ -15,6 +15,10 @@ export const login = async (nickname, senha) => {
         nickname,
         senha,
     });
+};
+
+export const findAllUsuarios = async () => {
+    return await argviewer.get("usuarios");
 };
 
 export const findUsuarioByNickname = async (nickname) => {

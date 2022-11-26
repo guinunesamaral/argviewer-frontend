@@ -1,0 +1,24 @@
+.previaDebate {
+    margin: auto;
+}
+
+.conteudoPreviaDebate {
+    cursor: pointer;
+    margin: auto;
+    text-align: center;
+    margin-top: 5%;
+    border-color: black;
+}
+
+.conteudoPreviaDebate__body {
+    background-color: black;
+    background-size: cover;
+    background-position: 100% 56%;
+    background-image: url(https://img.freepik.com/free-vector/group-people-with-speech-bubbles_24877-56560.jpg?w=826&t=st=1667270052~exp=1667270652~hmac=67234391f6376bdf9a0ec66517c2981357de5e85a38af8abc29316a2ebcac2b7);
+}
+
+.conteudoPreviaDebate__texto {
+    color: black;
+    text-align: left;
+    margin-bottom: 25px;
+}

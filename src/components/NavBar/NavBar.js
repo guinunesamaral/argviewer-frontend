@@ -1,21 +1,39 @@
-import { Figure, Form } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { Figure, Form } from "react-bootstrap";
+import { Typeahead } from "react-bootstrap-typeahead";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useDispatch, useSelector } from "react-redux";
 import {
     goToAlterarDados,
     goToLogin,
+    goToPerfil,
     goToPrincipal,
-} from "../../shared/navigations";
-import fotoPadrao from "../../img/perfil.jpg";
-import { logout } from "../../store/usuarioSlice";
-import { removeAllProposicoes } from "../../store/proposicoesSlice";
+} from "utils/navigations";
+import { findAllUsuarios } from "utils/requests";
+import { removeAllProposicoes } from "store/proposicoesSlice";
+import { logout } from "store/usuarioSlice";
+import fotoPadrao from "img/perfil.jpg";
 import "./NavBar.css";
 
 function NavBar() {
     const navigate = useNavigate();
     const dispatch = useDispatch();
-    const usuario = useSelector((state) => state.usuario);
+    const usuarioPlataforma = useSelector((state) => state.usuario);
+
+    const [options, setOptions] = useState([]);
+    useEffect(() => {
+        const fetchUsuarios = async () => await findAllUsuarios();
+        fetchUsuarios()
+            .then((res) => res.data)
+            .then((data) => {
+                setOptions(
+                    data.filter((u) => u.id !== usuarioPlataforma.data.id)
+                );
+            })
+            .catch();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
     const handleLogout = async () => {
         dispatch(logout());
@@ -26,21 +44,21 @@ function NavBar() {
     return (
         <div className="navBar">
             <div className="navBar__personalData">
-                {usuario.isLoggedIn && (
+                {usuarioPlataforma.isLoggedIn && (
                     <>
                         <Figure.Image
                             className="personalData__foto"
                             width={40}
                             height={40}
                             src={
-                                usuario.data.foto
-                                    ? `data:image/png;base64,${usuario.data.foto}`
+                                usuarioPlataforma.data.foto
+                                    ? `data:image/png;base64,${usuarioPlataforma.data.foto}`
                                     : fotoPadrao
                             }
                             onClick={goToAlterarDados.bind(this, navigate)}
                         />
-                        <span className="fw-bold text-black fs-20">
-                            @{usuario.data.nickname}
+                        <span className="fw-bold text-white fs-20">
+                            @{usuarioPlataforma.data.nickname}
                         </span>
                     </>
                 )}
@@ -49,28 +67,38 @@ function NavBar() {
                 <FontAwesomeIcon
                     className="navBar__homeIcon"
                     icon="fa-solid fa-house"
-                    color="black"
+                    color="white"
                     size="xl"
                     onClick={goToPrincipal.bind(this, navigate)}
                 />
                 <Form className="w-100 ml-10">
                     <Form.Group>
-                        <Form.Control
+                        <Typeahead
+                            id="typeahead"
+                            labelKey="nickname"
+                            onChange={(selected) => {
+                                if (selected.length > 0) {
+                                    const usuarioPesquisa = options.find(
+                                        (u) => u.nickname === selected[0]
+                                    );
+                                    goToPerfil(navigate, usuarioPesquisa);
+                                }
+                            }}
                             placeholder="Digite o que quer buscar"
-                            type="input"
+                            options={options.map((u) => u.nickname)}
                         />
                     </Form.Group>
                 </Form>
             </div>
             <div className="navBar__doorLocked">
-                {usuario.isLoggedIn && (
+                {usuarioPlataforma.isLoggedIn && (
                     <FontAwesomeIcon
                         style={{
                             margin: "10px 10px 10px 0",
                             cursor: "pointer",
                         }}
                         icon="fa-solid fa-door-closed"
-                        color="black"
+                        color="white"
                         size="xl"
                         onClick={handleLogout}
                     />

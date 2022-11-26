@@ -1,0 +1,36 @@
+.perfil {
+    display: flex;
+}
+
+.perfil__card {
+    align-items: center;
+    width: 420px;
+    margin: auto;
+    text-align: center;
+    border-radius: 15px;
+}
+
+.perfil__body {
+    width: 380px;
+}
+
+.perfil__title {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+.perfil__image {
+    min-height: 100px;
+    min-width: 100px;
+    border-radius: 50%;
+}
+
+.perfil__exibirDebates {
+    display: flex;
+    margin: auto;
+    margin-bottom: 15px;
+    margin-top: 10px;
+    float: left;
+    width: 100%;
+    justify-content: center;
+}

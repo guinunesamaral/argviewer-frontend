@@ -1,8 +1,8 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from "react";
-import { addAll } from "../../store/proposicoesSlice";
+import { addAll } from "store/proposicoesSlice";
 import VisualizarProposicao from "../VisualizarProposicao/VisualizarProposicao";
-import { findProposicoesByUsuarioId } from "../../shared/requests";
+import { findProposicoesByUsuarioId } from "utils/requests";
 import Loader from "../Loader/Loader";
 import BigPlusProposicao from "../Plus/BigPlusProposicao";
 import "./TelaPrincipal.css";

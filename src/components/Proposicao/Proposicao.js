@@ -1,13 +1,12 @@
+import { useState, useEffect } from "react";
+import { Figure } from "react-bootstrap";
 import Card from "react-bootstrap/Card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { Figure } from "react-bootstrap";
-import { goToPerfil, goToVisualizarProposicao } from "../../shared/navigations";
-import { formatText } from "../../shared/functions";
-import fotoPadrao from "../../img/perfil.jpg";
 import { useSelector } from "react-redux";
-import { addVote, findProposicaoById, removeVote } from "../../shared/requests";
-import { useState } from "react";
-import { useEffect } from "react";
+import { goToPerfil, goToVisualizarProposicao } from "utils/navigations";
+import { formatText } from "utils/functions";
+import { addVote, findProposicaoById, removeVote } from "utils/requests";
+import fotoPadrao from "img/perfil.jpg";
 import "./Proposicao.css";
 
 const proposicaoTemplate = {

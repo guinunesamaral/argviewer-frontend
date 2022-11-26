@@ -11,18 +11,18 @@ import Modal from "react-bootstrap/Modal";
 import Alert from "react-bootstrap/Alert";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { goToPrincipal } from "../../shared/navigations";
-import { findUsuarioByNickname, updateUsuario } from "../../shared/requests";
+import { goToPrincipal } from "utils/navigations";
+import { findUsuarioByNickname, updateUsuario } from "utils/requests";
 import { useRef } from "react";
-import { login } from "../../store/usuarioSlice";
-import fotoPadrao from "../../img/perfil.jpg";
+import { login } from "store/usuarioSlice";
+import fotoPadrao from "img/perfil.jpg";
 import Loader from "../Loader/Loader";
-import { arePasswordsEqual, isPasswordValid } from "../../shared/validations";
+import { arePasswordsEqual, isPasswordValid } from "utils/validations";
 import {
     DIFFERENT_PASSWORDS,
     INVALID_PASSWORD,
-} from "../../shared/errorMessages";
-import { concatMessages } from "../../shared/functions";
+} from "utils/errorMessages";
+import { concatMessages } from "utils/functions";
 import "./AlterarDados.css";
 
 function AlterarDados(props) {

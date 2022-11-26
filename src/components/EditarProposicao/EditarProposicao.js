@@ -1,28 +1,28 @@
+import React, { useRef, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import { Alert } from "react-bootstrap";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Modal from "react-bootstrap/Modal";
-import React, { useRef, useState } from "react";
-import { goToPrincipal } from "../../shared/navigations";
-import { useLocation, useNavigate } from "react-router-dom";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     checkForProfanity,
     checkSimilarity,
     editarProposicao,
     findRespostas,
-} from "../../shared/requests";
-import { isTextValid } from "../../shared/validations";
+} from "utils/requests";
+import { goToPrincipal } from "utils/navigations";
+import { isTextValid } from "utils/validations";
 import {
     INVALID_PROPOSICAO_TEXT,
     SENTENCE_PROFANITY,
     SENTENCE_TOO_SIMILAR,
-} from "../../shared/errorMessages";
-import { concatMessages } from "../../shared/functions";
+} from "utils/errorMessages";
+import { concatMessages } from "utils/functions";
 import Loader from "../Loader/Loader";
-import { Alert } from "react-bootstrap";
 import "./EditarProposicao.css";
 
 export default function EditarProposicao() {

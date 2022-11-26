@@ -1,14 +1,17 @@
-import Proposicao from "../Proposicao/Proposicao";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Figure } from "react-bootstrap";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     goToCriarResposta,
     goToEditarProposicao,
+    goToPerfil,
     goToVisualizarProposicao,
-} from "../../shared/navigations";
-import { formatText } from "../../shared/functions";
-import "./VisualizarProposicao.css";
+} from "utils/navigations";
 import { useSelector } from "react-redux";
+import { formatText } from "utils/functions";
+import Proposicao from "../Proposicao/Proposicao";
+import fotoPadrao from "img/perfil.jpg";
+import "./VisualizarProposicao.css";
 
 function VisualizarProposicao(props) {
     const navigate = useNavigate();
@@ -21,8 +24,35 @@ function VisualizarProposicao(props) {
 
     return (
         <div className="visualizarProposicao">
-            <div key={proposicao.id} className="visualizarProposicao__wrapper">
+            <div className="visualizarProposicao__wrapper">
                 <div className="visualizarProposicao__content">
+                    <div className="d-flex align-center">
+                        <Figure.Image
+                            className="proposicao__foto"
+                            width={30}
+                            height={30}
+                            src={
+                                usuarioReferencia.foto
+                                    ? `data:image/png;base64,${usuarioReferencia.foto}`
+                                    : fotoPadrao
+                            }
+                            onClick={goToPerfil.bind(
+                                this,
+                                navigate,
+                                usuarioReferencia
+                            )}
+                        />
+                        <span
+                            className="c-pointer fw-bold fs-17"
+                            onClick={goToPerfil.bind(
+                                this,
+                                navigate,
+                                usuarioReferencia
+                            )}
+                        >
+                            @{usuarioReferencia.nickname}
+                        </span>
+                    </div>
                     <h4
                         className="visualizarProposicao__texto"
                         onClick={goToVisualizarProposicao.bind(

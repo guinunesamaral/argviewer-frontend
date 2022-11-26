@@ -1,5 +1,5 @@
 .visualizarProposicao {
-    margin-bottom: 20px;
+    margin: 20px 15px;
 }
 
 .visualizarProposicao__wrapper {
@@ -12,7 +12,7 @@
 
 .visualizarProposicao__content {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     position: relative;
     padding: 0 15px;
@@ -27,12 +27,8 @@
     margin: 20px 0;
 }
 
-.visualizarProposicao__icons {
-    position: absolute;
-    top: 50%;
-    right: 10px;
-    transform: translate(0, -50%);
-}
+/* .visualizarProposicao__icons {
+} */
 
 .visualizarProposicao__respostas {
     flex: 1;

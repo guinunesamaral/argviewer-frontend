@@ -8,7 +8,7 @@ body,
 #root,
 .App {
     height: 100%;
-    background-color: black;
+    background-color: rgb(36, 37, 38);
 }
 
 .c-pointer {
@@ -17,6 +17,10 @@ body,
 
 .text-black {
     color: black;
+}
+
+.text-white {
+    color: white;
 }
 
 .text-blue {

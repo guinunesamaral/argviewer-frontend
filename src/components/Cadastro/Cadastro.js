@@ -6,16 +6,16 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate } from "react-router-dom";
-import { goToPrincipal } from "../../shared/navigations";
+import { goToPrincipal } from "utils/navigations";
 import { Alert, Figure, Modal } from "react-bootstrap";
-import fotoPadrao from "../../img/perfil.jpg";
+import fotoPadrao from "img/perfil.jpg";
 import Loader from "../Loader/Loader";
-import { login as loginAction } from "../../store/usuarioSlice";
+import { login as loginAction } from "store/usuarioSlice";
 import {
     cadastrarUsuario,
     findUsuarioByNickname,
     login,
-} from "../../shared/requests";
+} from "../../utils/requests";
 import { useDispatch } from "react-redux";
 import {
     DIFFERENT_PASSWORDS,
@@ -23,16 +23,16 @@ import {
     INVALID_NAME,
     INVALID_NICKNAME,
     INVALID_PASSWORD,
-} from "../../shared/errorMessages";
+} from "../../utils/errorMessages";
 import {
     arePasswordsEqual,
     isEmailValid,
     isNicknameValid,
     isNameValid,
     isPasswordValid,
-} from "../../shared/validations";
+} from "../../utils/validations";
 import "./Cadastro.css";
-import { concatMessages } from "../../shared/functions";
+import { concatMessages } from "../../utils/functions";
 
 function Cadastro(props) {
     const navigate = useNavigate();
@@ -281,13 +281,11 @@ function Cadastro(props) {
                     </Card>
                     <Modal show={show} onHide={handleClose}>
                         <Modal.Header closeButton>
-                            <Modal.Title>
-                                Confirmar Alteração dos Dados
-                            </Modal.Title>
+                            <Modal.Title>Confirmar Cadastro</Modal.Title>
                         </Modal.Header>
                         <Modal.Body>
-                            Você está efetuando alterações em seu cadastro.
-                            Clique em Confirmar para prosseguir
+                            Você está efetuando seu cadastro. Clique em
+                            Confirmar para prosseguir
                         </Modal.Body>
                         <Modal.Footer>
                             <Button variant="secondary" onClick={handleClose}>

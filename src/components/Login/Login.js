@@ -5,8 +5,8 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
-import { login as loginAction } from "../../store/usuarioSlice";
-import { findUsuarioByNickname, login } from "../../shared/requests";
+import { login as loginAction } from "store/usuarioSlice";
+import { findUsuarioByNickname, login } from "utils/requests";
 import Loader from "../Loader/Loader";
 import "./Login.css";
 

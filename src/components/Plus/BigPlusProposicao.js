@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { goToCriarProposicao } from "../../shared/navigations";
+import { goToCriarProposicao } from "utils/navigations";
 
 const BigPlusProposicao = () => {
     const navigate = useNavigate();
