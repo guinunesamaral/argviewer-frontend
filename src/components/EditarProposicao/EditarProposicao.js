@@ -20,6 +20,7 @@ import {
     INVALID_PROPOSICAO_TEXT,
     SENTENCE_PROFANITY,
     SENTENCE_TOO_SIMILAR,
+    TEXTO_IGUAL_AO_ORIGINAL,
 } from "utils/errorMessages";
 import { concatMessages } from "utils/functions";
 import Loader from "../Loader/Loader";
@@ -33,6 +34,7 @@ export default function EditarProposicao() {
     const loadingMessageRef = useRef("");
 
     const { proposicao } = { ...location.state };
+    const textoOriginal = proposicao.texto;
     const [texto, setTexto] = useState(proposicao.texto);
 
     const [failureMessage, setFailureMessage] = useState("");
@@ -43,7 +45,7 @@ export default function EditarProposicao() {
 
     const isProfanity = async () => {
         const res = await checkForProfanity(texto);
-        return res.status === 200 ? res.data > 0.1 : false;
+        return res.status === 200 ? res.data > 0.5 : false;
     };
 
     const isTooSimilar = async () => {
@@ -51,28 +53,32 @@ export default function EditarProposicao() {
         if (!proposicao.proposicaoInicial) {
             const res = await findRespostas(proposicao.id);
             respostas = res.data && proposicao.respostas.map((r) => r.texto);
+        } else {
+            respostas = proposicao.respostas
+                ? proposicao.respostas.map((r) => r.texto)
+                : [];
         }
-        respostas = proposicao.respostas
-            ? proposicao.respostas.map((r) => r.texto)
-            : [];
-        const res = await checkSimilarity(texto, [
-            proposicao.texto,
-            ...respostas,
-        ]);
-        return res.status === 200 ? res.data.some((s) => s > 0.8) : false;
+        if (respostas.length > 0) {
+            const res = await checkSimilarity(texto, [
+                proposicao.texto,
+                ...respostas,
+            ]);
+            return res.status === 200 ? res.data.some((s) => s > 0.8) : false;
+        }
+        return false;
     };
 
     const validarDados = async () => {
         let valid = true;
         let message = "";
 
+        if (texto === textoOriginal) {
+            valid = false;
+            message = TEXTO_IGUAL_AO_ORIGINAL;
+        }
         if (!isTextValid(texto)) {
             valid = false;
-            message = INVALID_PROPOSICAO_TEXT;
-        }
-        if (!valid) {
-            setShowAlertSuccess(false);
-            setFailureMessage(message);
+            message = concatMessages(message, INVALID_PROPOSICAO_TEXT);
         }
         if (await isProfanity()) {
             valid = false;
@@ -81,6 +87,10 @@ export default function EditarProposicao() {
         if (await isTooSimilar()) {
             valid = false;
             message = concatMessages(message, SENTENCE_TOO_SIMILAR);
+        }
+        if (!valid) {
+            setShowAlertSuccess(false);
+            setFailureMessage(message);
         }
         return valid;
     };

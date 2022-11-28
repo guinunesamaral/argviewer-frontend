@@ -19,15 +19,27 @@
     border-bottom: 1px solid black;
 }
 
+.visualizarProposicao__foto {
+    cursor: pointer;
+    min-width: 30px;
+    min-height: 30px;
+    margin: 0 5px 0 0;
+    border-radius: 50%;
+}
+
 .visualizarProposicao__texto {
+    cursor: pointer;
+    overflow: hidden;
     font-weight: bold;
     text-align: center;
-    cursor: pointer;
-    justify-self: center;
     margin: 20px 0;
 }
 
 /* .visualizarProposicao__icons {
+    position: absolute;
+    top: 50%;
+    right: 10px;
+    transform: translate(0, -50%);
 } */
 
 .visualizarProposicao__respostas {

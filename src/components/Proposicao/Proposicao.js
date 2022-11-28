@@ -4,7 +4,13 @@ import Card from "react-bootstrap/Card";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useSelector } from "react-redux";
 import { goToPerfil, goToVisualizarProposicao } from "utils/navigations";
-import { formatText } from "utils/functions";
+import {
+    formatText,
+    isUpvoteCallback,
+    upvoteColorCallback,
+    downvoteColorCallback,
+    listaDeVotosContemUsuarioLogado,
+} from "utils/functions";
 import { addVote, findProposicaoById, removeVote } from "utils/requests";
 import fotoPadrao from "img/perfil.jpg";
 import "./Proposicao.css";
@@ -20,61 +26,95 @@ const proposicaoTemplate = {
     votes: [],
 };
 
-function Proposicao(props) {
-    const usuarioPlataforma = useSelector((state) => state.usuario.data);
+const Proposicao = (props) => {
+    const usuarioLogado = useSelector((state) => state.usuario.data);
     const { usuarioReferencia, proposicaoId, navigate } = { ...props };
     const [proposicao, setProposicao] = useState(proposicaoTemplate);
 
-    // usuarioVote and upvote
-    const usuarioVoteCallback = (v) => v.usuarioId === usuarioPlataforma.id;
-    const haveAlreadyVotedCallback = () =>
-        proposicao.votes.some(usuarioVoteCallback);
-    const [haveAlreadyVoted, setHaveAlreadyVoted] = useState(
-        haveAlreadyVotedCallback
+    const [jaVotouNessaProposicao, setJaVotouNessaProposicao] = useState(
+        listaDeVotosContemUsuarioLogado(proposicao, usuarioLogado.id)
     );
-    const isUpvoteCallback = () =>
-        haveAlreadyVoted
-            ? proposicao.votes.find(usuarioVoteCallback).upvote
-            : undefined;
-    const [isUpvote, setIsUpvote] = useState(isUpvoteCallback);
 
-    // fetches proposicao when the component loads
+    const [isUpvote, setIsUpvote] = useState(
+        isUpvoteCallback(
+            jaVotouNessaProposicao,
+            proposicao.votes,
+            usuarioLogado.id
+        )
+    );
+
+    const [upvoteColor, setUpvoteColor] = useState(
+        upvoteColorCallback(isUpvote)
+    );
+
+    const [downvoteColor, setDownvoteColor] = useState(
+        downvoteColorCallback(isUpvote)
+    );
+
+    const setData = () => {
+        setJaVotouNessaProposicao(
+            listaDeVotosContemUsuarioLogado(proposicao, usuarioLogado.id)
+        );
+        setIsUpvote(
+            isUpvoteCallback(
+                jaVotouNessaProposicao,
+                proposicao.votes,
+                usuarioLogado.id
+            )
+        );
+        setUpvoteColor(upvoteColorCallback(isUpvote));
+        setDownvoteColor(downvoteColorCallback(isUpvote));
+        // console.log(
+        //     jaVotouNessaProposicao,
+        //     isUpvote,
+        //     upvoteColor,
+        //     downvoteColor
+        // );
+    };
+
     useEffect(() => {
-        const findProposicao = async () => {
-            const res = await findProposicaoById(proposicaoId);
-            setProposicao(res.data);
-        };
-        findProposicao();
+        const findProposicao = async () =>
+            await findProposicaoById(proposicaoId);
+        findProposicao()
+            .then((res) => {
+                setProposicao(res.data);
+            })
+            .then(() => setData());
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
-    // updates haveAlreadyVoted and isUpvote
     useEffect(() => {
-        setHaveAlreadyVoted(haveAlreadyVotedCallback);
-        setIsUpvote(isUpvoteCallback);
+        setData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [proposicao]);
+    }, [proposicao.qtdDownvotes, proposicao.qtdUpvotes]);
 
-    // upvoteCollorCallbacks
-    const isUpvoteCollorCallback = () => (isUpvote === true ? "blue" : "black");
-    const isDownvoteCollorCallback = () =>
-        isUpvote === false ? "blue" : "black";
-
-    // handleVoteClick
-    const handleVoteClick = async (isUpvote) => {
-        if (!haveAlreadyVoted) {
-            await addVote(usuarioPlataforma.id, proposicao.id, isUpvote);
-            setIsUpvote(isUpvote);
-            setHaveAlreadyVoted(false);
-            if (isUpvote === true) {
-                proposicao.qtdUpvotes += 1;
-            } else {
-                proposicao.qtdDownvotes += 1;
-            }
+    const handleUpvoteClick = async () => {
+        if (jaVotouNessaProposicao && isUpvote === true) {
+            await removeVote(usuarioLogado.id, proposicao.id);
+            proposicao.qtdUpvotes -= 1;
+        } else if (jaVotouNessaProposicao && isUpvote === false) {
+            // Remove downvote e adiciona upvote
+            await removeVote(usuarioLogado.id, proposicao.id);
+            await addVote(usuarioLogado.id, proposicao.id, true);
+            proposicao.qtdUpvotes += 1;
         } else {
-            await removeVote(usuarioPlataforma.id, proposicao.id);
-            setIsUpvote(undefined);
-            setHaveAlreadyVoted(false);
+            await addVote(usuarioLogado.id, proposicao.id, true);
+            proposicao.qtdUpvotes += 1;
+        }
+    };
+
+    const handleDownvoteClick = async () => {
+        if (jaVotouNessaProposicao && isUpvote === false) {
+            await removeVote(usuarioLogado.id, proposicao.id);
+            proposicao.qtdDownvotes -= 1;
+        } else if (jaVotouNessaProposicao && isUpvote === true) {
+            // Remove upvote a adiciona upvote
+            await removeVote(usuarioLogado.id, proposicao.id);
+            await addVote(usuarioLogado.id, proposicao.id, false);
+            proposicao.qtdDownvotes += 1;
+        } else {
+            await addVote(usuarioLogado.id, proposicao.id, false);
+            proposicao.qtdDownvotes += 1;
         }
     };
 
@@ -110,33 +150,29 @@ function Proposicao(props) {
                         </span>
                     </div>
                     <div className="d-flex align-center">
-                        <span
-                            className={`fw-bold mr-05 text-${isDownvoteCollorCallback()}`}
-                        >
+                        <span className={`fw-bold mr-05 text-${downvoteColor}`}>
                             {proposicao.qtdDownvotes}
                         </span>
                         <FontAwesomeIcon
                             className="c-pointer mr-15"
                             icon="fa-solid fa-arrow-down"
-                            color={() => isDownvoteCollorCallback()}
+                            color={downvoteColor}
                             size="lg"
-                            onClick={handleVoteClick.bind(this, true)}
+                            onClick={handleUpvoteClick.bind(this, true)}
                         />
-                        <span
-                            className={`fw-bold mr-05 text-${isUpvoteCollorCallback()}`}
-                        >
+                        <span className={`fw-bold mr-05 text-${upvoteColor}`}>
                             {proposicao.qtdUpvotes}
                         </span>
                         <FontAwesomeIcon
                             className="c-pointer"
                             icon="fa-solid fa-arrow-up"
-                            color={isUpvoteCollorCallback()}
+                            color={upvoteColor}
                             size="lg"
-                            onClick={handleVoteClick.bind(this)}
+                            onClick={handleDownvoteClick.bind(this, false)}
                         />
                     </div>
                 </div>
-                <div className="d-flex mt-10">
+                <div className="proposicao__texto--wrapper">
                     <p
                         className="c-pointer fs-17"
                         onClick={goToVisualizarProposicao.bind(
@@ -152,6 +188,6 @@ function Proposicao(props) {
             </Card.Body>
         </Card>
     );
-}
+};
 
 export default Proposicao;

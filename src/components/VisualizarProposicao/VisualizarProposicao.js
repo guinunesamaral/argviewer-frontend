@@ -28,7 +28,7 @@ function VisualizarProposicao(props) {
                 <div className="visualizarProposicao__content">
                     <div className="d-flex align-center">
                         <Figure.Image
-                            className="proposicao__foto"
+                            className="visualizarProposicao__foto"
                             width={30}
                             height={30}
                             src={
@@ -65,27 +65,27 @@ function VisualizarProposicao(props) {
                         {formatText(proposicao.texto)}
                     </h4>
                     <div className="visualizarProposicao__icons">
-                        <span className="fw-bold mr-05">
+                        <span className="fw-bold">
                             {proposicao.qtdDownvotes}
                         </span>
                         <FontAwesomeIcon
-                            className="c-pointer mr-15"
+                            className="c-pointer ml-05"
                             icon="fa-solid fa-arrow-down"
                             color="black"
                             size="lg"
                         />
-                        <span className="fw-bold mr-05">
+                        <span className="fw-bold ml-15">
                             {proposicao.qtdDownvotes}
                         </span>
                         <FontAwesomeIcon
-                            className="c-pointer mr-15"
+                            className="c-pointer ml-05"
                             icon="fa-solid fa-arrow-up"
                             color="black"
                             size="lg"
                         />
                         {usuarioPlataforma.id === usuarioReferencia.id && (
                             <FontAwesomeIcon
-                                className="c-pointer mr-15"
+                                className="c-pointer ml-15"
                                 icon="fa-solid fa-edit"
                                 color="black"
                                 size="lg"

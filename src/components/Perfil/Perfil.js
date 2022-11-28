@@ -64,7 +64,9 @@ function Perfil() {
                             <Form.Label>Nome de usuário</Form.Label>
                             <Form.Control
                                 disabled
-                                defaultValue={usuario.nome}
+                                defaultValue={
+                                    usuario.anonimo ? "------" : usuario.nome
+                                }
                                 placeholder="Nome"
                             />
                         </Form.Group>
@@ -73,7 +75,9 @@ function Perfil() {
                             <Form.Label>Email</Form.Label>
                             <Form.Control
                                 disabled
-                                defaultValue={usuario.email}
+                                defaultValue={
+                                    usuario.anonimo ? "------" : usuario.email
+                                }
                                 type="email"
                                 placeholder="Email"
                             />

@@ -10,6 +10,9 @@ export const INVALID_PASSWORD = "As senhas devem ter entre 6 e 40 caracteres.";
 
 export const DIFFERENT_PASSWORDS = "As senhas devem coincidir!";
 
+export const TEXTO_IGUAL_AO_ORIGINAL =
+    "O novo texto não pode ser igual ao original.";
+
 export const INVALID_PROPOSICAO_TEXT =
     "O texto da proposição deve ter no máximo 400 caracteres.";
 

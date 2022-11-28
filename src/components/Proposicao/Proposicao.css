@@ -25,3 +25,9 @@
     margin: 0 5px 0 0;
     border-radius: 50%;
 }
+
+.proposicao__texto--wrapper {
+    overflow: hidden;
+    display: flex;
+    margin-top: 10px;
+}
