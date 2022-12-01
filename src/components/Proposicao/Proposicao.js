@@ -15,80 +15,37 @@ import { addVote, findProposicaoById, removeVote } from "utils/requests";
 import fotoPadrao from "img/perfil.jpg";
 import "./Proposicao.css";
 
-const proposicaoTemplate = {
-    id: 0,
-    texto: "",
-    fonte: "",
-    qtdDownvotes: 0,
-    qtdUpvotes: 0,
-    usuarioId: 0,
-    respostas: [],
-    votes: [],
-};
-
 const Proposicao = (props) => {
     const usuarioLogado = useSelector((state) => state.usuario.data);
-    const { usuarioReferencia, proposicaoId, navigate } = { ...props };
-    const [proposicao, setProposicao] = useState(proposicaoTemplate);
+    const { usuarioReferencia, proposicao: p, navigate } = { ...props };
 
-    const [jaVotouNessaProposicao, setJaVotouNessaProposicao] = useState(
-        listaDeVotosContemUsuarioLogado(proposicao, usuarioLogado.id)
-    );
-
-    const [isUpvote, setIsUpvote] = useState(
-        isUpvoteCallback(
-            jaVotouNessaProposicao,
-            proposicao.votes,
-            usuarioLogado.id
-        )
-    );
+    const [proposicao, setProposicao] = useState(p);
 
     const [upvoteColor, setUpvoteColor] = useState(
-        upvoteColorCallback(isUpvote)
+        upvoteColorCallback(proposicao, usuarioLogado.id)
     );
-
     const [downvoteColor, setDownvoteColor] = useState(
-        downvoteColorCallback(isUpvote)
+        downvoteColorCallback(proposicao, usuarioLogado.id)
     );
 
-    const setData = () => {
-        setJaVotouNessaProposicao(
-            listaDeVotosContemUsuarioLogado(proposicao, usuarioLogado.id)
-        );
-        setIsUpvote(
-            isUpvoteCallback(
-                jaVotouNessaProposicao,
-                proposicao.votes,
-                usuarioLogado.id
-            )
-        );
-        setUpvoteColor(upvoteColorCallback(isUpvote));
-        setDownvoteColor(downvoteColorCallback(isUpvote));
-        // console.log(
-        //     jaVotouNessaProposicao,
-        //     isUpvote,
-        //     upvoteColor,
-        //     downvoteColor
-        // );
+    const setData = async () => {
+        const res = await findProposicaoById(proposicao.id);
+        setProposicao(res.data);
+        setUpvoteColor(upvoteColorCallback(res.data, usuarioLogado.id));
+        setDownvoteColor(downvoteColorCallback(res.data, usuarioLogado.id));
     };
-
-    useEffect(() => {
-        const findProposicao = async () =>
-            await findProposicaoById(proposicaoId);
-        findProposicao()
-            .then((res) => {
-                setProposicao(res.data);
-            })
-            .then(() => setData());
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
 
     useEffect(() => {
         setData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [proposicao.qtdDownvotes, proposicao.qtdUpvotes]);
+    }, []);
 
     const handleUpvoteClick = async () => {
+        const jaVotouNessaProposicao = listaDeVotosContemUsuarioLogado(
+            proposicao,
+            usuarioLogado.id
+        );
+        const isUpvote = isUpvoteCallback(proposicao, usuarioLogado.id);
         if (jaVotouNessaProposicao && isUpvote === true) {
             await removeVote(usuarioLogado.id, proposicao.id);
             proposicao.qtdUpvotes -= 1;
@@ -96,14 +53,18 @@ const Proposicao = (props) => {
             // Remove downvote e adiciona upvote
             await removeVote(usuarioLogado.id, proposicao.id);
             await addVote(usuarioLogado.id, proposicao.id, true);
-            proposicao.qtdUpvotes += 1;
         } else {
             await addVote(usuarioLogado.id, proposicao.id, true);
-            proposicao.qtdUpvotes += 1;
         }
+        setData();
     };
 
     const handleDownvoteClick = async () => {
+        const jaVotouNessaProposicao = listaDeVotosContemUsuarioLogado(
+            proposicao,
+            usuarioLogado.id
+        );
+        const isUpvote = isUpvoteCallback(proposicao, usuarioLogado.id);
         if (jaVotouNessaProposicao && isUpvote === false) {
             await removeVote(usuarioLogado.id, proposicao.id);
             proposicao.qtdDownvotes -= 1;
@@ -111,11 +72,10 @@ const Proposicao = (props) => {
             // Remove upvote a adiciona upvote
             await removeVote(usuarioLogado.id, proposicao.id);
             await addVote(usuarioLogado.id, proposicao.id, false);
-            proposicao.qtdDownvotes += 1;
         } else {
             await addVote(usuarioLogado.id, proposicao.id, false);
-            proposicao.qtdDownvotes += 1;
         }
+        setData();
     };
 
     return (
@@ -146,11 +106,16 @@ const Proposicao = (props) => {
                                 usuarioReferencia
                             )}
                         >
-                            @{usuarioReferencia.nickname}
+                            @
+                            {usuarioReferencia.anonimo
+                                ? "------"
+                                : usuarioReferencia.nickname}
                         </span>
                     </div>
                     <div className="d-flex align-center">
-                        <span className={`fw-bold mr-05 text-${downvoteColor}`}>
+                        <span
+                            className={`fs-20 fw-bold mr-05 text-${downvoteColor}`}
+                        >
                             {proposicao.qtdDownvotes}
                         </span>
                         <FontAwesomeIcon
@@ -158,9 +123,11 @@ const Proposicao = (props) => {
                             icon="fa-solid fa-arrow-down"
                             color={downvoteColor}
                             size="lg"
-                            onClick={handleUpvoteClick.bind(this, true)}
+                            onClick={handleDownvoteClick.bind(this, true)}
                         />
-                        <span className={`fw-bold mr-05 text-${upvoteColor}`}>
+                        <span
+                            className={`fs-20 fw-bold mr-05 text-${upvoteColor}`}
+                        >
                             {proposicao.qtdUpvotes}
                         </span>
                         <FontAwesomeIcon
@@ -168,7 +135,7 @@ const Proposicao = (props) => {
                             icon="fa-solid fa-arrow-up"
                             color={upvoteColor}
                             size="lg"
-                            onClick={handleDownvoteClick.bind(this, false)}
+                            onClick={handleUpvoteClick.bind(this, false)}
                         />
                     </div>
                 </div>

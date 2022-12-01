@@ -14,7 +14,7 @@ import {
     editarProposicao,
     findRespostas,
 } from "utils/requests";
-import { goToPrincipal } from "utils/navigations";
+import { goBack } from "utils/navigations";
 import { isTextValid } from "utils/validations";
 import {
     INVALID_PROPOSICAO_TEXT,
@@ -126,7 +126,7 @@ export default function EditarProposicao() {
                                 <FontAwesomeIcon
                                     className="c-pointer"
                                     icon="fa-solid fa-arrow-left"
-                                    onClick={goToPrincipal.bind(this, navigate)}
+                                    onClick={goBack.bind(this, navigate)}
                                 />
                             </Row>
                             <Card.Title

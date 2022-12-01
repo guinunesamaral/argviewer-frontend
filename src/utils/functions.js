@@ -5,20 +5,28 @@ export const formatText = (text) => {
 };
 
 export const listaDeVotosContemUsuarioLogado = (proposicao, usuarioId) =>
-    proposicao.votes.some((v) => v.usuarioId === usuarioId);
-
-export const isUpvoteCallback = (jaVotouNessaProposicao, votes, usuarioId) => {
-    // console.log(jaVotouNessaProposicao, votes, usuarioId);
-    const voto = votes.find((v) => v.usuarioId === usuarioId);
-    return jaVotouNessaProposicao
-        ? voto
-            ? voto.upvote
-            : undefined
+    proposicao.votes
+        ? proposicao.votes.some((v) => v.usuarioId === usuarioId)
         : undefined;
+
+export const isUpvoteCallback = (proposicao, usuarioId) => {
+    const jaVotouNessaProposicao = listaDeVotosContemUsuarioLogado(
+        proposicao,
+        usuarioId
+    );
+    if (jaVotouNessaProposicao) {
+        const voto = proposicao.votes.find((v) => v.usuarioId === usuarioId);
+        return voto ? voto.upvote : undefined;
+    }
+    return undefined;
 };
 
-export const upvoteColorCallback = (isUpvote) =>
-    isUpvote === true ? "blue" : "black";
+export const upvoteColorCallback = (proposicao, usuarioId) => {
+    const isUpvote = isUpvoteCallback(proposicao, usuarioId);
+    return isUpvote === true ? "blue" : "black";
+};
 
-export const downvoteColorCallback = (isUpvote) =>
-    isUpvote === false ? "blue" : "black";
+export const downvoteColorCallback = (proposicao, usuarioId) => {
+    const isUpvote = isUpvoteCallback(proposicao, usuarioId);
+    return isUpvote === false ? "blue" : "black";
+};

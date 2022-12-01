@@ -9,7 +9,7 @@ import Figure from "react-bootstrap/Figure";
 import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
-import { goToPrincipal } from "utils/navigations";
+import { goBack } from "utils/navigations";
 import { findProposicoesByUsuarioId } from "utils/requests";
 import PreviaDebate from "../PreviaDebate/PreviaDebate";
 import fotoPadrao from "img/perfil.jpg";
@@ -40,7 +40,7 @@ function Perfil() {
                 <Card.Body className="perfil__body">
                     <Row>
                         <FontAwesomeIcon
-                            onClick={goToPrincipal.bind(this, navigate)}
+                            onClick={goBack.bind(this, navigate)}
                             className="c-pointer"
                             icon={faArrowLeft}
                         />
@@ -90,7 +90,11 @@ function Perfil() {
                             <Form.Label>Apelido</Form.Label>
                             <Form.Control
                                 disabled
-                                defaultValue={usuario.nickname}
+                                defaultValue={
+                                    usuario.anonimo
+                                        ? "------"
+                                        : usuario.nickname
+                                }
                                 placeholder="Apelido"
                             />
                         </Form.Group>

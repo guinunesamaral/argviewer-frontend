@@ -16,7 +16,7 @@ import { logout } from "store/usuarioSlice";
 import fotoPadrao from "img/perfil.jpg";
 import "./NavBar.css";
 
-function NavBar() {
+const NavBar = () => {
     const navigate = useNavigate();
     const dispatch = useDispatch();
     const usuarioPlataforma = useSelector((state) => state.usuario);
@@ -106,6 +106,6 @@ function NavBar() {
             </div>
         </div>
     );
-}
+};
 
 export default NavBar;

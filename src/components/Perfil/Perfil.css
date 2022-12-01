@@ -1,5 +1,6 @@
 .perfil {
     display: flex;
+    padding: 20px 0;
 }
 
 .perfil__card {

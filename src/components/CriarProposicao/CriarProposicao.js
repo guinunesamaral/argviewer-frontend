@@ -5,7 +5,7 @@ import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useNavigate, useLocation } from "react-router-dom";
-import { goToPrincipal } from "utils/navigations";
+import { goBack } from "utils/navigations";
 import {
     checkForProfanity,
     checkSimilarity,
@@ -134,7 +134,7 @@ export default function CriarProposicao() {
                         <Card.Body style={{ width: "380px" }}>
                             <Row>
                                 <FontAwesomeIcon
-                                    onClick={goToPrincipal.bind(this, navigate)}
+                                    onClick={goBack.bind(this, navigate)}
                                     className="c-pointer"
                                     color="black"
                                     icon="fa-solid fa-arrow-left"
