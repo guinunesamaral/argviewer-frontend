@@ -110,6 +110,7 @@ export default function EditarProposicao() {
             loadingMessageRef.current = "editando sua proposição";
             await handleEditarProposicao();
             setShowAlertSuccess(true);
+            goBack(navigate);
         }
         setLoading(false);
     };

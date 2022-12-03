@@ -73,25 +73,21 @@ export default function CriarProposicao() {
             valid = false;
             message = INVALID_PROPOSICAO_TEXT;
         }
-        if (!isEmpty(fonte)) {
-            if (!isSourceValid(fonte)) {
-                valid = false;
-                message = concatMessages(message, INVALID_PROPOSICAO_FONTE);
-            }
-        }
-        if (!valid) {
-            setShowAlertSuccess(false);
-            setFailureMessage(message);
+        if (!isEmpty(fonte) && !isSourceValid(fonte)) {
+            valid = false;
+            message = concatMessages(message, INVALID_PROPOSICAO_FONTE);
         }
         if (await isProfanity()) {
             valid = false;
             message = concatMessages(message, SENTENCE_PROFANITY);
         }
-        if (proposicaoReferencia) {
-            if (await isTooSimilar()) {
-                valid = false;
-                message = concatMessages(message, SENTENCE_TOO_SIMILAR);
-            }
+        if (proposicaoReferencia && (await isTooSimilar())) {
+            valid = false;
+            message = concatMessages(message, SENTENCE_TOO_SIMILAR);
+        }
+        if (!valid) {
+            setShowAlertSuccess(false);
+            setFailureMessage(message);
         }
         return valid;
     };
@@ -120,6 +116,7 @@ export default function CriarProposicao() {
             loadingMessageRef.current = "criando sua proposição";
             await handleCriarProposicao();
             setShowAlertSuccess(true);
+            goBack(navigate);
         }
         setLoading(false);
     };
