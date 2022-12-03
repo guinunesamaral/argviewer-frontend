@@ -74,6 +74,7 @@ const NavBar = () => {
                 <Form className="w-100 ml-10">
                     <Form.Group>
                         <Typeahead
+                            style={{ margin: 0 }}
                             id="typeahead"
                             labelKey="nickname"
                             onChange={(selected) => {

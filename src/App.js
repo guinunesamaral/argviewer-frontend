@@ -81,7 +81,7 @@ function App() {
                     path="/editarProposicao"
                     element={<EditarProposicao />}
                 />
-                <Route path="/perfil" element={<Perfil />} />
+                <Route path="/perfil/:usuarioId" element={<Perfil />} />
                 <Route path="/criarProposicao" element={<CriarProposicao />} />
             </Routes>
         </Container>

@@ -53,9 +53,9 @@ export const goToCriarResposta = (
 };
 
 export const goToPerfil = (navigate, usuario) => {
-    navigate(`/perfil`, {
+    navigate(`/perfil/${usuario.id}`, {
         state: {
-            usuario: usuario,
+            usuario,
         },
     });
 };

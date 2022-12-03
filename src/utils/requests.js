@@ -25,6 +25,10 @@ export const findUsuarioByNickname = async (nickname) => {
     return await argviewer.get(`usuarios/nickname/${nickname}`);
 };
 
+export const findUsuarioById = async (id) => {
+    return await argviewer.get(`usuarios/${id}`);
+};
+
 export const findUsuariosByNomeOrNicknameContaining = async (value) => {
     return await argviewer.get(`usuarios?value=${value}`);
 };

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
@@ -10,25 +10,30 @@ import Modal from "react-bootstrap/Modal";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faArrowLeft } from "@fortawesome/free-solid-svg-icons";
 import { goBack } from "utils/navigations";
-import { findProposicoesByUsuarioId } from "utils/requests";
+import { findProposicoesByUsuarioId, findUsuarioById } from "utils/requests";
 import PreviaDebate from "../PreviaDebate/PreviaDebate";
 import fotoPadrao from "img/perfil.jpg";
 import "./Perfil.css";
 
 function Perfil() {
     const navigate = useNavigate();
-    const location = useLocation();
-    const { usuario } = { ...location.state };
+    let { usuarioId } = useParams();
 
+    const [usuario, setUsuario] = useState({});
     const [proposicoes, setProposicoes] = useState([]);
     useEffect(() => {
+        const fetchUsuario = async () => {
+            const res = await findUsuarioById(usuarioId);
+            setUsuario(res.data);
+        };
+        fetchUsuario();
+
         const fetchProposicoes = async () =>
-            await findProposicoesByUsuarioId(usuario.id);
+            await findProposicoesByUsuarioId(usuarioId);
         fetchProposicoes()
             .then((res) => res.data)
             .then((data) => setProposicoes(data));
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
+    }, [usuarioId]);
 
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
