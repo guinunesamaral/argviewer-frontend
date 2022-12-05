@@ -19,7 +19,7 @@ export const goToVisualizarProposicao = (
     proposicao,
     usuarioReferencia
 ) => {
-    navigate(`/visualizarProposicao`, {
+    navigate(`/visualizarProposicao/${proposicao.id}`, {
         state: {
             proposicao,
             usuarioReferencia,

@@ -17,7 +17,7 @@ import "./Perfil.css";
 
 function Perfil() {
     const navigate = useNavigate();
-    let { usuarioId } = useParams();
+    const { usuarioId } = useParams();
 
     const [usuario, setUsuario] = useState({});
     const [proposicoes, setProposicoes] = useState([]);

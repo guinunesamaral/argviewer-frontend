@@ -74,7 +74,7 @@ function App() {
                     }
                 />
                 <Route
-                    path="/visualizarProposicao"
+                    path="/visualizarProposicao/:proposicaoId"
                     element={<VisualizarProposicao />}
                 />
                 <Route

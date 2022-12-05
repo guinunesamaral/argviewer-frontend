@@ -14,7 +14,7 @@ function Login() {
     const [loading, setLoading] = useState(false);
     const loadingMessageRef = useRef("");
 
-    const [nickname, setNickname] = useState("gn19");
+    const [nickname, setNickname] = useState("gn");
     const [senha, setSenha] = useState("123456");
     const dispatch = useDispatch();
 

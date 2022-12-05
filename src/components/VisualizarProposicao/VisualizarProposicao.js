@@ -1,4 +1,5 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import { Figure } from "react-bootstrap";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -17,15 +18,17 @@ import {
 } from "utils/functions";
 import Proposicao from "../Proposicao/Proposicao";
 import fotoPadrao from "img/perfil.jpg";
-import "./VisualizarProposicao.css";
-import { useEffect, useState } from "react";
 import { addVote, findProposicaoById, removeVote } from "utils/requests";
+import "./VisualizarProposicao.css";
 
 const VisualizarProposicao = (props) => {
     const navigate = useNavigate();
     const location = useLocation();
+    const { proposicaoId } = useParams();
 
     const usuarioLogado = useSelector((state) => state.usuario.data);
+
+    // Os dados da proposição podem vir de props ou da rota. Quando ocorre um click em uma proposição, o id é passado na url
     const { proposicao: p, usuarioReferencia } = Object.keys(props).length
         ? { ...props }
         : { ...location.state };
@@ -40,16 +43,23 @@ const VisualizarProposicao = (props) => {
     );
 
     const setData = async () => {
-        const res = await findProposicaoById(proposicao.id);
-        setProposicao(res.data);
-        setUpvoteColor(upvoteColorCallback(res.data, usuarioLogado.id));
-        setDownvoteColor(downvoteColorCallback(res.data, usuarioLogado.id));
+        if (proposicaoId) {
+            const res = await findProposicaoById(proposicaoId);
+            setProposicao(res.data);
+            setUpvoteColor(upvoteColorCallback(res.data, usuarioLogado.id));
+            setDownvoteColor(downvoteColorCallback(res.data, usuarioLogado.id));
+        }
     };
 
     useEffect(() => {
         setData();
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
+
+    useEffect(() => {
+        setData();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [proposicaoId]);
 
     const handleUpvoteClick = async () => {
         const jaVotouNessaProposicao = listaDeVotosContemUsuarioLogado(
