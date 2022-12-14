@@ -62,7 +62,7 @@ export default function CriarProposicao() {
             proposicaoReferencia.texto,
             ...respostas,
         ]);
-        return res.status === 200 ? res.data.some((s) => s > 0.8) : false;
+        return res.status === 200 ? res.data.some((s) => s > 0.6) : false;
     };
 
     const validarDados = async () => {

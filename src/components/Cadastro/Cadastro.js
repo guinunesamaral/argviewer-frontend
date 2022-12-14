@@ -42,8 +42,8 @@ function Cadastro(props) {
     const [nome, setNome] = useState("");
     const [nickname, setNickname] = useState("");
     const [email, setEmail] = useState("");
-    const [senha, setSenha] = useState("");
-    const [senha2, setSenha2] = useState("");
+    const [senha, setSenha] = useState("123456");
+    const [senha2, setSenha2] = useState("123456");
     const [loading, setLoading] = useState(false);
 
     useEffect(() => {

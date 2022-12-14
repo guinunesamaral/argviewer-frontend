@@ -77,7 +77,7 @@ const VisualizarProposicao = (props) => {
         } else {
             await addVote(usuarioLogado.id, proposicao.id, true);
         }
-        setData();
+        await setData();
     };
 
     const handleDownvoteClick = async () => {
@@ -96,7 +96,7 @@ const VisualizarProposicao = (props) => {
         } else {
             await addVote(usuarioLogado.id, proposicao.id, false);
         }
-        setData();
+        await setData();
     };
 
     return (
